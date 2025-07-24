@@ -4,8 +4,13 @@
  */
 package com.cv_personal.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,11 +20,16 @@ import lombok.Setter;
 @Table(name = "usuario")
 public class Usuario {
     
-    private Long id;
+    @Id
+    @GeneratedValue (strategy = GenerationType.SEQUENCE)
+    private Long id_usuario;
     private String email;
     private String password;
     private int rol;
     
-    @OneToOne
-    private Persona id_persona;
+    
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Persona persona;
+    
 }
