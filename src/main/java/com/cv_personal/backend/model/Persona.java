@@ -51,7 +51,7 @@ public class Persona {
     private String num_celular;
 
     @OneToOne
-    @JoinColumn(name = "id_usuario") // Clave foránea en la tabla usuario
+    @JoinColumn(name = "usuario_id") // Clave foránea en la tabla usuario
     private Usuario usuario;
     
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL)
