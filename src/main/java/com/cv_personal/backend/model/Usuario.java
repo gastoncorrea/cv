@@ -11,7 +11,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,8 +28,15 @@ public class Usuario {
     @Id
     @GeneratedValue (strategy = GenerationType.SEQUENCE)
     private Long id_usuario;
+    @Email(message = "El formato del email es inválido")
+    @Column(unique = true, nullable = false) 
     private String email;
+    @Size(min = 8, max = 15, message = "El password debe tener de 8 a 15 caractes")
+    @Column(length = 15, nullable =false)
     private String password;
+    @Min(0)
+    @Max(1)
+    @Column(nullable = false)
     private int rol;
     
     
