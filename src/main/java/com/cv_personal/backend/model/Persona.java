@@ -4,6 +4,7 @@
  */
 package com.cv_personal.backend.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,9 +13,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,7 +51,10 @@ public class Persona {
     private String num_celular;
 
     @OneToOne
-    @JoinColumn(name = "usuario_id") // Clave foránea en la tabla usuario
+    @JoinColumn(name = "id_usuario") // Clave foránea en la tabla usuario
     private Usuario usuario;
+    
+    @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL)
+    private List<Educacion> estudios;
 
 }
