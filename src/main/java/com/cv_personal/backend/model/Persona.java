@@ -4,6 +4,7 @@
  */
 package com.cv_personal.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,6 +57,11 @@ public class Persona {
     @OneToOne
     @JoinColumn(name = "usuario_id") // Clave foránea en la tabla usuario
     private Usuario usuario;
+    
+    @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Residencia residencia;
+    
     
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL)
     private List<Educacion> estudios;
