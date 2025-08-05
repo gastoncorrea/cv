@@ -17,6 +17,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +47,8 @@ public class Persona {
     @Size(min = 2, max = 50, message = "El apellido debe tener entre 2 y 50 caracteres")
     @Column(length = 50, nullable = false)
     private String apellido;
+    @Column(nullable = false)
+    private LocalDate fecha_nacimiento;
     @Pattern(regexp = "^[+]?[(]?\\d{3}[)]?[-\\s.]?\\d{3}[-\\s.]?\\d{4,6}$",
             message = "Número de celular inválido")
     private String num_celular;

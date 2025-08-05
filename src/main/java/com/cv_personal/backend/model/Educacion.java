@@ -13,10 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,17 +28,17 @@ public class Educacion {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id_educacion;
     @Size(min = 2, max = 45, message = "El nombre de la institucion debe tener entre 2 y 45 caracteres")
-    @Column(length = 45)
+    @Column(length = 45, nullable = false)
     private String nombre_institucion;
     @Size(min = 2, max = 100, message = "El link de la imagen debe tener entre 2 y 100 caracteres")
     @Column(length = 100)
     private String logo_imagen;
-    @Temporal(TemporalType.DATE)
-    private Date fecha_inicio;
-    @Temporal(TemporalType.DATE)
-    private Date fecha_fin;
+    @Column(nullable = false)
+    private LocalDate fecha_inicio;
+    @Column(nullable = false)
+    private LocalDate fecha_fin;
     @Size(min = 2, max = 45, message = "El titulo debe tener entre 2 y 45 caracteres")
-    @Column(length = 45)
+    @Column(length = 45, nullable = false)
     private String titulo;
     @Size(min = 2, max = 200, message = "El link del titulo debe tener entre 2 y 200 caracteres")
     @Column(length = 200)
