@@ -65,5 +65,8 @@ public class Persona {
     
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL)
     private List<Educacion> estudios;
+    
+    @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL )
+    private List<Proyecto> proyectos;
 
 }
