@@ -19,7 +19,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "herramientas")
 @Getter @Setter        
-class Herramienta {
+public class Herramienta {
     
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
