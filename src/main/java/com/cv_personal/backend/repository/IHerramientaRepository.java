@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 import com.cv_personal.backend.model.Herramienta;
 
 @Repository
-public interface IHerramientaRepository extends JpaRepository<Long,Herramienta> {
+public interface IHerramientaRepository extends JpaRepository<Herramienta,Long> {
     
 }
