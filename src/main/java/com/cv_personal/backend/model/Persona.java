@@ -5,6 +5,7 @@
 package com.cv_personal.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,14 +60,15 @@ public class Persona {
     private Usuario usuario;
     
     @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnore
     private Residencia residencia;
     
     
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Educacion> estudios;
     
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL )
+    @JsonIgnore
     private List<Proyecto> proyectos;
 
 }
