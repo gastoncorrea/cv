@@ -4,11 +4,10 @@
  */
 package com.cv_personal.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,6 +32,12 @@ public class Persona {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id_persona;
+    @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
+    @Column(length = 50, nullable = false)
+    private String nombre;
+    @Size(min = 2, max = 50, message = "El apellido debe tener entre 2 y 50 caracteres")
+    @Column(length = 50, nullable = false)
+    private String apellido;
     @Lob // Indica que el atributo puede almacenar datos grandes (como imágenes)
     @Size(max = 16_777_215)
     @Column(columnDefinition = "LONGBLOB")
@@ -43,12 +48,6 @@ public class Persona {
     @Size(min = 8, max = 100, message = "La url debe tener entre 8 y 100 caracteres")
     @Column(length = 100)
     private String url_linkedin;
-    @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
-    @Column(length = 50, nullable = false)
-    private String nombre;
-    @Size(min = 2, max = 50, message = "El apellido debe tener entre 2 y 50 caracteres")
-    @Column(length = 50, nullable = false)
-    private String apellido;
     @Column(nullable = false)
     private LocalDate fecha_nacimiento;
     @Pattern(regexp = "^[+]?[(]?\\d{3}[)]?[-\\s.]?\\d{3}[-\\s.]?\\d{4,6}$",
@@ -59,16 +58,14 @@ public class Persona {
     @JoinColumn(name = "usuario_id") // Clave foránea en la tabla usuario
     private Usuario usuario;
     
-    @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Residencia residencia;
     
     
-    @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Educacion> estudios;
     
-    @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL )
-    @JsonIgnore
+    @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL )
     private List<Proyecto> proyectos;
 
 }

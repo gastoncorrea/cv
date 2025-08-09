@@ -48,7 +48,6 @@ public class Educacion {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_persona", nullable = false)
-    @JsonBackReference
     private Persona persona;
     
 }
