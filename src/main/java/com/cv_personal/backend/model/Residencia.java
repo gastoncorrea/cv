@@ -10,7 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public class Residencia {
     @Column(length = 45)
     private String nacionalidad;
     
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "persona_id")
     private Persona persona;
     
