@@ -67,5 +67,8 @@ public class Persona {
     
     @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL )
     private List<Proyecto> proyectos;
+    
+    @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Contacto> contacto;
 
 }
