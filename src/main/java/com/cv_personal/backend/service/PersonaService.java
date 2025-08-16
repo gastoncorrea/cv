@@ -4,6 +4,7 @@
  */
 package com.cv_personal.backend.service;
 
+import com.cv_personal.backend.dto.PersonaDto;
 import com.cv_personal.backend.model.Persona;
 import com.cv_personal.backend.repository.IPersonaRepository;
 import java.util.List;
@@ -16,18 +17,18 @@ public class PersonaService implements IPersonaService  {
     private IPersonaRepository personaRep;
     
     @Override
-    public void savePersona(Persona persona) {
+    public PersonaDto savePersona(Persona persona) {
         personaRep.save(persona);
     }
 
     @Override
-    public List<Persona> getPersonas() {
+    public List<PersonaDto> getPersonas() {
         List<Persona> listPersona = personaRep.findAll();
         return listPersona;
     }
 
     @Override
-    public Persona findPersona(Long id) {
+    public PersonaDto findPersona(Long id) {
         Persona persona = personaRep.findById(id).orElse(null);
         return persona;
     }

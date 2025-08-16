@@ -4,6 +4,7 @@
  */
 package com.cv_personal.backend.controller;
 
+import com.cv_personal.backend.dto.UsuarioDto;
 import com.cv_personal.backend.model.Usuario;
 import com.cv_personal.backend.service.IUsuarioService;
 import java.util.List;
@@ -44,7 +45,7 @@ public class UsuarioController {
     @GetMapping("/all")
     public ResponseEntity<?> getUsuario() {
         try {
-            List<Usuario> listUsuario = usuarioService.getUsuario();
+            List<UsuarioDto> listUsuario = usuarioService.getUsuario();
             return ResponseEntity.ok(listUsuario);
         } catch (DataAccessException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -55,7 +56,7 @@ public class UsuarioController {
     @GetMapping("/find/{id}")
     public ResponseEntity<?> findIdUsuario(@PathVariable Long id){
         try{
-            Usuario usuario = usuarioService.findUsuario(id);
+            UsuarioDto usuario = usuarioService.findUsuario(id);
             return ResponseEntity.ok(usuario);
         }catch (DataAccessException e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -67,7 +68,7 @@ public class UsuarioController {
     public ResponseEntity<?> updateUsario(@PathVariable Long id,
                                             @RequestBody Usuario usuario){
         try{
-            Usuario findUsuario = usuarioService.findUsuario(id);
+            Usuario findUsuario = usuarioService.updateUsuario(id);
             findUsuario.setEmail(usuario.getEmail());
             findUsuario.setPassword(usuario.getPassword());
             findUsuario.setRol(usuario.getRol());

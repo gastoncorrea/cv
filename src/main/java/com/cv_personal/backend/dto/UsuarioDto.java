@@ -12,6 +12,7 @@ public class UsuarioDto {
     
     private Long id_usuario;
     private String email;
+    private String password;
     private int rol;
     
 }

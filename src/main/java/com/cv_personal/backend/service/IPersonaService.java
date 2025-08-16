@@ -4,17 +4,18 @@
  */
 package com.cv_personal.backend.service;
 
+import com.cv_personal.backend.dto.PersonaDto;
 import com.cv_personal.backend.model.Persona;
 import java.util.List;
 
 
 public interface IPersonaService {
     
-    public void savePersona(Persona persona);
+    public PersonaDto savePersona(Persona persona);
     
-    public List<Persona> getPersonas();
+    public List<PersonaDto> getPersonas();
     
-    public Persona findPersona(Long id);
+    public PersonaDto findPersona(Long id);
     
     public void deletePersona(Long id);
     

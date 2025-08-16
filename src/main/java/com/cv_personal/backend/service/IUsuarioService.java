@@ -4,17 +4,20 @@
  */
 package com.cv_personal.backend.service;
 
+import com.cv_personal.backend.dto.UsuarioDto;
 import com.cv_personal.backend.model.Usuario;
 import java.util.List;
 
 
 public interface IUsuarioService {
     
-    public void saveUsuario(Usuario usuario);
+    public UsuarioDto saveUsuario(Usuario usuario);
     
-    public List<Usuario> getUsuario();
+    public List<UsuarioDto> getUsuario();
     
-    public Usuario findUsuario(Long id);
+    public UsuarioDto findUsuario(Long id);
+    
+    public Usuario updateUsuario(Long id);
     
     public void deleteUsuario(Long id);
     

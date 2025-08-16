@@ -18,8 +18,8 @@ public class Contacto {
     
     private Long id_contacto;
     private String nombre;
-    private String url_perfil;
-    private byte[] imagen_logo;
+    private String url_contacto;
+    private byte[] logo_img;
     
     @ManyToOne
     @JoinColumn(name = "persona_id")
