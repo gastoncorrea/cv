@@ -4,17 +4,20 @@
  */
 package com.cv_personal.backend.service;
 
+import com.cv_personal.backend.dto.ProyectoDto;
 import com.cv_personal.backend.model.Proyecto;
 import java.util.List;
 
 
 public interface IProyectoService {
     
-    public void saveProyecto(Proyecto proyecto);
+    public ProyectoDto saveProyecto(Proyecto proyecto);
     
-    public List<Proyecto> getProyecto();
+    public List<ProyectoDto> getProyecto();
     
-    public Proyecto findProyecto(Long id);
+    public ProyectoDto findProyecto(Long id);
+    
+    public Proyecto updateProyecto(Long id);
     
     public void deleteProyecto(Long id);
 }

@@ -4,9 +4,9 @@
  */
 package com.cv_personal.backend.controller;
 
-import com.cv_personal.backend.dto.EducacionDto;
-import com.cv_personal.backend.model.Educacion;
-import com.cv_personal.backend.service.IEducacionService;
+import com.cv_personal.backend.dto.ProyectoDto;
+import com.cv_personal.backend.model.Proyecto;
+import com.cv_personal.backend.service.IProyectoService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +25,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/educacion")
-public class EducacionController {
+@RequestMapping("/proyecto")
+public class ProyectoController {
     
     @Autowired
-    private IEducacionService educService;
+    private IProyectoService proyService;
     
     @PostMapping("/save")
-    public ResponseEntity<?> saveEducacion(@RequestBody Educacion educacion){
+    public ResponseEntity<?> saveProyecto(@RequestBody Proyecto proyecto){
         try{
-            educService.saveEducacion(educacion);
-            return ResponseEntity.ok("Educacion creada con exito");
+            ProyectoDto proyectoSave = proyService.saveProyecto(proyecto);
+            return ResponseEntity.ok(proyectoSave);
         }catch(DataIntegrityViolationException e){
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("error","Registro duplicado"));
@@ -46,21 +46,21 @@ public class EducacionController {
     }
     
     @GetMapping("/all")
-    public ResponseEntity<?> getEducacion(){
+    public ResponseEntity<?> getProyecto(){
         try{
-            List<EducacionDto> educaciones = educService.getEducacion();
-            return ResponseEntity.ok(educaciones);
+            List<ProyectoDto> proyectos = proyService.getProyecto();
+            return ResponseEntity.ok(proyectos);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error interno en el servidor ");
+                    .body("Error interno en el servidor");
         }
     }
     
     @GetMapping("/find/{id}")
-    public ResponseEntity<?> findEducacion(@PathVariable Long id){
+    public ResponseEntity<?> findProyecto(@PathVariable Long id){
         try{
-            EducacionDto educacion = educService.findEducacion(id);
-            return ResponseEntity.ok(educacion);
+            ProyectoDto proyecto = proyService.findProyecto(id);
+            return ResponseEntity.ok(proyecto);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error en el servidor");
@@ -69,10 +69,10 @@ public class EducacionController {
     }
     
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteEducacion(@PathVariable Long id){
+    public ResponseEntity<?> deleteProyecto(@PathVariable Long id){
         try{
-            educService.deleteEducacion(id);
-            return ResponseEntity.ok("Educacion eliminada con exito");
+            proyService.deleteProyecto(id);
+            return ResponseEntity.ok("Proyecto eliminado con exito");
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno en el servidor al intentar eliminar el registro");
@@ -81,22 +81,21 @@ public class EducacionController {
     }
     
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateEducacion(@PathVariable Long id,
-                                                @RequestBody Educacion educacion){
+    public ResponseEntity<?> updateProyecto(@PathVariable Long id,
+                                                @RequestBody Proyecto proyecto){
     
         try{
-            Educacion findEducacion = educService.updateEducacion(id);
-            if(findEducacion != null){
-                findEducacion.setNombre_institucion(educacion.getNombre_institucion());
-                findEducacion.setLogo_imagen(educacion.getLogo_imagen());
-                findEducacion.setFecha_inicio(educacion.getFecha_inicio());
-                findEducacion.setFecha_fin(educacion.getFecha_fin());
-                findEducacion.setTitulo(educacion.getTitulo());
-                findEducacion.setUrl_titulo(educacion.getUrl_titulo());
+            Proyecto findProyecto = proyService.updateProyecto(id);
+            if(findProyecto != null){
+                findProyecto.setNombre(proyecto.getNombre());
+                findProyecto.setDescripcion(proyecto.getDescripcion());
+                findProyecto.setUrl(proyecto.getUrl());
+                findProyecto.setInicio(proyecto.getInicio());
+                findProyecto.setFin(proyecto.getFin());
                 
-                educService.saveEducacion(findEducacion);
+                proyService.saveProyecto(findProyecto);
                 
-                return ResponseEntity.ok(findEducacion);
+                return ResponseEntity.ok(proyService);
             }else{
                 return ResponseEntity.badRequest().body("El registro con ese id no existe");
             }
@@ -105,6 +104,5 @@ public class EducacionController {
                     .body("Error en el servidor el intentar modificar el registro");
         }
     }
-    
     
 }
