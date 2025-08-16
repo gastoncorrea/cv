@@ -4,17 +4,20 @@
  */
 package com.cv_personal.backend.service;
 
+import com.cv_personal.backend.dto.EducacionDto;
 import com.cv_personal.backend.model.Educacion;
 import java.util.List;
 
 
 public interface IEducacionService {
     
-    public void saveEducacion(Educacion educacion);
+    public EducacionDto saveEducacion(Educacion educacion);
     
-    public List<Educacion> getEducacion();
+    public List<EducacionDto> getEducacion();
     
-    public Educacion findEducacion(Long id);
+    public EducacionDto findEducacion(Long id);
+    
+    public Educacion updateEducacion(Long id);
     
     public void deleteEducacion(Long id);
 }

@@ -4,6 +4,7 @@
  */
 package com.cv_personal.backend.controller;
 
+import com.cv_personal.backend.dto.EducacionDto;
 import com.cv_personal.backend.model.Educacion;
 import com.cv_personal.backend.service.IEducacionService;
 import java.util.List;
@@ -47,7 +48,7 @@ public class EducacionController {
     @GetMapping("/all")
     public ResponseEntity<?> getEducacion(){
         try{
-            List<Educacion> educaciones = educService.getEducacion();
+            List<EducacionDto> educaciones = educService.getEducacion();
             return ResponseEntity.ok(educaciones);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -58,7 +59,7 @@ public class EducacionController {
     @GetMapping("/find/{id}")
     public ResponseEntity<?> findEducacion(@PathVariable Long id){
         try{
-            Educacion educacion = educService.findEducacion(id);
+            EducacionDto educacion = educService.findEducacion(id);
             return ResponseEntity.ok(educacion);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -84,7 +85,7 @@ public class EducacionController {
                                                 @RequestBody Educacion educacion){
     
         try{
-            Educacion findEducacion = educService.findEducacion(id);
+            Educacion findEducacion = educService.updateEducacion(id);
             if(findEducacion != null){
                 findEducacion.setNombre_institucion(educacion.getNombre_institucion());
                 findEducacion.setLogo_imagen(educacion.getLogo_imagen());
