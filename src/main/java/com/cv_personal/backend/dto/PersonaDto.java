@@ -4,7 +4,10 @@
  */
 package com.cv_personal.backend.dto;
 
+import com.cv_personal.backend.model.Contacto;
+import com.cv_personal.backend.model.Residencia;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +19,10 @@ public class PersonaDto {
     private String apellido;
     private byte[] imagen_perfil;
     private String descripcion_mi;
-    private String url_linkedin;
     private LocalDate fecha_nacimiento;
     private String num_celular;
+    
+    private List<Residencia> residencias;
+    
+    private List<Contacto> contactos;
 }

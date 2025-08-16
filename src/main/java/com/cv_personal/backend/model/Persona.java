@@ -45,9 +45,6 @@ public class Persona {
     @Size(min = 8, max = 500, message = "La descripcion debe tener entre 8 y 500 caracteres")
     @Column(length = 500, nullable = false)
     private String descripcion_mi;
-    @Size(min = 8, max = 100, message = "La url debe tener entre 8 y 100 caracteres")
-    @Column(length = 100)
-    private String url_linkedin;
     @Column(nullable = false)
     private LocalDate fecha_nacimiento;
     @Pattern(regexp = "^[+]?[(]?\\d{3}[)]?[-\\s.]?\\d{3}[-\\s.]?\\d{4,6}$",

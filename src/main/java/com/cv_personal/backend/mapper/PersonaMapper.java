@@ -4,10 +4,23 @@
  */
 package com.cv_personal.backend.mapper;
 
-/**
- *
- * @author jugad
- */
+import com.cv_personal.backend.dto.PersonaDto;
+import com.cv_personal.backend.model.Persona;
+import org.springframework.stereotype.Component;
+
+@Component
 public class PersonaMapper {
     
+    public PersonaDto toDto(Persona persona){
+        PersonaDto personaDto = new PersonaDto();
+        personaDto.setId_persona(persona.getId_persona());
+        personaDto.setNombre(persona.getNombre());
+        personaDto.setApellido(persona.getApellido());
+        personaDto.setImagen_perfil(persona.getImagen_perfil());
+        personaDto.setDescripcion_mi(persona.getDescripcion_mi());
+        personaDto.setFecha_nacimiento(persona.getFecha_nacimiento());
+        personaDto.setNum_celular(persona.getNum_celular());
+        
+        return personaDto;
+    }
 }
