@@ -4,10 +4,14 @@
  */
 package com.cv_personal.backend.dto;
 
-/**
- *
- * @author jugad
- */
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class HerramientaDto {
+    
+    private Long id_herramienta;
+    private String nombre;
+    private String version;
     
 }
