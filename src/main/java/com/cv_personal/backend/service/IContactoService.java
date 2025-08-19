@@ -4,10 +4,10 @@
  */
 package com.cv_personal.backend.service;
 
-/**
- *
- * @author jugad
- */
+import com.cv_personal.backend.model.Contacto;
+
+
 public interface IContactoService {
     
+    public void saveContacto(Contacto contacto);
 }

@@ -4,10 +4,20 @@
  */
 package com.cv_personal.backend.service;
 
-/**
- *
- * @author jugad
- */
-public class ContactoService {
+import com.cv_personal.backend.model.Contacto;
+import com.cv_personal.backend.repository.IContactoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ContactoService implements IContactoService{
+    
+    @Autowired
+    private IContactoRepository contacRep;
+    
+    @Override
+    public void saveContacto(Contacto contacto) {
+        contacRep.save(contacto);
+    }
     
 }
