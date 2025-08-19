@@ -4,7 +4,9 @@
  */
 package com.cv_personal.backend.dto;
 
+import com.cv_personal.backend.model.Herramienta;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,5 +19,7 @@ public class ProyectoDto {
     private String url;
     private LocalDate inicio;
     private LocalDate fin;
+    
+    private List<Herramienta> herramientas;
     
 }
