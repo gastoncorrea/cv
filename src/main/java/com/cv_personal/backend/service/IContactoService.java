@@ -4,10 +4,20 @@
  */
 package com.cv_personal.backend.service;
 
+import com.cv_personal.backend.dto.ContactoDto;
 import com.cv_personal.backend.model.Contacto;
+import java.util.List;
 
 
 public interface IContactoService {
     
-    public void saveContacto(Contacto contacto);
+    public ContactoDto saveContacto(Contacto contacto);
+    
+    public List<ContactoDto> getContacto();
+    
+    public ContactoDto findContacto(Long id);
+    
+    public Contacto updateContacto(Long id);
+    
+    public void deleteContacto(Long id);
 }
