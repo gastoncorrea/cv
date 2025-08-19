@@ -4,10 +4,13 @@
  */
 package com.cv_personal.backend.dto;
 
-/**
- *
- * @author jugad
- */
+
 public class ResidenciaDto {
+    
+    private Long id_residencia;
+    private String localidad;
+    private String provincia;
+    private String pais;
+    private String nacionalidad;
     
 }
