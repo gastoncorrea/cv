@@ -56,7 +56,7 @@ public class Persona {
     private Usuario usuario;
     
     @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Residencia residencia;
+    private List<Residencia> residencia;
     
     
     @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

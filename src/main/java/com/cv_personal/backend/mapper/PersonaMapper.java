@@ -21,6 +21,9 @@ public class PersonaMapper {
         personaDto.setFecha_nacimiento(persona.getFecha_nacimiento());
         personaDto.setNum_celular(persona.getNum_celular());
         
+        personaDto.setContactos(persona.getContacto());
+        personaDto.setResidencias(persona.getResidencia());
+        
         return personaDto;
     }
 }
