@@ -4,7 +4,10 @@
  */
 package com.cv_personal.backend.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class ResidenciaDto {
     
     private Long id_residencia;
