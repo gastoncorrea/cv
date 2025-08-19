@@ -4,17 +4,20 @@
  */
 package com.cv_personal.backend.service;
 
+import com.cv_personal.backend.dto.ResidenciaDto;
 import com.cv_personal.backend.model.Residencia;
 import java.util.List;
 
 
 public interface IResidenciaService {
     
-    public void saveResidencia(Residencia residencia);
+    public ResidenciaDto saveResidencia(Residencia residencia);
     
-    public List<Residencia> getResidencia();
+    public List<ResidenciaDto> getResidencia();
     
-    public Residencia findResidencia(Long id);
+    public ResidenciaDto findResidencia(Long id);
+    
+    public Residencia updateResidencia(Long id);
     
     public void deleteResidencia(Long id);
     
