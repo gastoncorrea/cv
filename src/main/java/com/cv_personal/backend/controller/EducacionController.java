@@ -34,8 +34,8 @@ public class EducacionController {
     @PostMapping("/save")
     public ResponseEntity<?> saveEducacion(@RequestBody Educacion educacion){
         try{
-            educService.saveEducacion(educacion);
-            return ResponseEntity.ok("Educacion creada con exito");
+            EducacionDto educacionSave = educService.saveEducacion(educacion);
+            return ResponseEntity.ok(educacionSave);
         }catch(DataIntegrityViolationException e){
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("error","Registro duplicado"));
