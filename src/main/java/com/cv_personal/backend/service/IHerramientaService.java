@@ -4,17 +4,20 @@
  */
 package com.cv_personal.backend.service;
 
+import com.cv_personal.backend.dto.HerramientaDto;
 import com.cv_personal.backend.model.Herramienta;
 import java.util.List;
 
 
 public interface IHerramientaService {
     
-    public void saveHerramienta(Herramienta herramienta);
+    public HerramientaDto saveHerramienta(Herramienta herramienta);
     
-    public List<Herramienta> getHerramienta();
+    public List<HerramientaDto> getHerramienta();
     
-    public Herramienta findHerramienta(Long id);
+    public HerramientaDto findHerramienta(Long id);
+    
+    public Herramienta updateHerramienta(Long id);
     
     public void deleteHerramienta(Long id);
     
