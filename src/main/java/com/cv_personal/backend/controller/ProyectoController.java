@@ -93,9 +93,9 @@ public class ProyectoController {
                 findProyecto.setInicio(proyecto.getInicio());
                 findProyecto.setFin(proyecto.getFin());
                 
-                proyService.saveProyecto(findProyecto);
+                ProyectoDto proyectoSave = proyService.saveProyecto(findProyecto);
                 
-                return ResponseEntity.ok(proyService);
+                return ResponseEntity.ok(proyectoSave);
             }else{
                 return ResponseEntity.badRequest().body("El registro con ese id no existe");
             }
