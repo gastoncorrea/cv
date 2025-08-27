@@ -5,11 +5,20 @@
 package com.cv_personal.backend.mapper;
 
 import com.cv_personal.backend.dto.EducacionDto;
+import com.cv_personal.backend.dto.HerramientaDto;
 import com.cv_personal.backend.model.Educacion;
+import com.cv_personal.backend.model.Herramienta;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EducacionMapper {
+    
+    @Autowired
+    private HerramientaMapper herramientaMapper;
     
     public EducacionDto toDto(Educacion educacion){
         
@@ -22,6 +31,18 @@ public class EducacionMapper {
         educacionDto.setTitulo(educacion.getTitulo());
         educacionDto.setUrl_titulo(educacion.getUrl_titulo());
         
+        educacionDto.setHerramientas(setHerramientaDto(educacion.getHerramientas()));
+        
         return educacionDto;
     }
+    
+    public Set<HerramientaDto> setHerramientaDto(Set<Herramienta> setHerramienta){
+        if (setHerramienta == null) {
+            return new HashSet<>();
+        }
+        return setHerramienta.stream()
+                .map(herramientaMapper::toDto)
+                .collect(Collectors.toSet());
+        }
+    
 }

@@ -64,13 +64,14 @@ public class PersonaController {
             @RequestBody Persona persona) {
         try {
             Persona findPersona = personaService.updatePersona(id);
-            findPersona.setId_persona(persona.getId_persona());
             findPersona.setNombre(persona.getNombre());
             findPersona.setApellido(persona.getApellido());
             findPersona.setImagen_perfil(persona.getImagen_perfil());
             findPersona.setDescripcion_mi(persona.getDescripcion_mi());
             findPersona.setFecha_nacimiento(persona.getFecha_nacimiento());
             findPersona.setNum_celular(persona.getNum_celular());
+            
+            personaService.savePersona(findPersona);
             return ResponseEntity.ok("Datos personales actualizado con exito");
         } catch (DataAccessException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

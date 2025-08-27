@@ -4,10 +4,21 @@
  */
 package com.cv_personal.backend.mapper;
 
+import com.cv_personal.backend.dto.HerramientaDto;
 import com.cv_personal.backend.dto.ProyectoDto;
+import com.cv_personal.backend.model.Herramienta;
 import com.cv_personal.backend.model.Proyecto;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProyectoMapper {
+    
+    @Autowired
+    private HerramientaMapper herramientaMapper;
 
     public ProyectoDto toDto(Proyecto proyecto) {
         
@@ -19,8 +30,18 @@ public class ProyectoMapper {
         proyectoDto.setInicio(proyecto.getInicio());
         proyectoDto.setFin(proyecto.getFin());
         proyectoDto.setUrl(proyecto.getUrl());
+        proyectoDto.setHerramientas(setHerramientaDto(proyecto.getHerramientas()));
         
         return proyectoDto;
         
     }
+    
+    public Set<HerramientaDto> setHerramientaDto(Set<Herramienta> setHerramienta){
+        if (setHerramienta == null) {
+            return new HashSet<>();
+        }
+        return setHerramienta.stream()
+                .map(herramientaMapper::toDto)
+                .collect(Collectors.toSet());
+        }
 }

@@ -11,10 +11,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,7 +33,6 @@ public class Educacion {
     @Size(min = 2, max = 45, message = "El nombre de la institucion debe tener entre 2 y 45 caracteres")
     @Column(length = 45, nullable = false)
     private String nombre_institucion;
-    @Size(min = 2, max = 100, message = "El link de la imagen debe tener entre 2 y 100 caracteres")
     @Column(length = 100)
     private String logo_imagen;
     @Column(nullable = false)
@@ -40,12 +42,14 @@ public class Educacion {
     @Size(min = 2, max = 45, message = "El titulo debe tener entre 2 y 45 caracteres")
     @Column(length = 45, nullable = false)
     private String titulo;
-    @Size(min = 2, max = 200, message = "El link del titulo debe tener entre 2 y 200 caracteres")
     @Column(length = 200)
     private String url_titulo;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_persona", nullable = false)
     private Persona persona;
+    
+    @ManyToMany(mappedBy = "estudios")
+    private Set<Herramienta> herramientas = new HashSet<>();
     
 }

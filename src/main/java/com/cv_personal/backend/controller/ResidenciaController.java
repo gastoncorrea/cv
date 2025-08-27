@@ -93,9 +93,9 @@ public class ResidenciaController {
                 findResidencia.setNacionalidad(residencia.getNacionalidad());
                 
                 
-                resiService.saveResidencia(findResidencia);
+                ResidenciaDto residenciaSave = resiService.saveResidencia(findResidencia);
                 
-                return ResponseEntity.ok(findResidencia);
+                return ResponseEntity.ok(residenciaSave);
             }else{
                 return ResponseEntity.badRequest().body("El registro con ese id no existe");
             }

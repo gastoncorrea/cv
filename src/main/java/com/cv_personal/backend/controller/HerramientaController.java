@@ -90,9 +90,9 @@ public class HerramientaController {
                 findHerramienta.setNombre(herramienta.getNombre());
                 findHerramienta.setVersion(herramienta.getVersion());                
                 
-                herrService.saveHerramienta(findHerramienta);
+                HerramientaDto herramientaSave = herrService.saveHerramienta(findHerramienta);
                 
-                return ResponseEntity.ok(findHerramienta);
+                return ResponseEntity.ok(herramientaSave);
             }else{
                 return ResponseEntity.badRequest().body("El registro con ese id no existe");
             }

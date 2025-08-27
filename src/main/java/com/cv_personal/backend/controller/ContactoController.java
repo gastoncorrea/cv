@@ -91,9 +91,9 @@ public class ContactoController {
                 findContacto.setUrl_contacto(contacto.getUrl_contacto());
                 findContacto.setLogo_img(contacto.getLogo_img());
                 
-                contacService.saveContacto(findContacto);
+                ContactoDto contactoSave = contacService.saveContacto(findContacto);
                 
-                return ResponseEntity.ok(findContacto);
+                return ResponseEntity.ok(contactoSave);
             }else{
                 return ResponseEntity.badRequest().body("El registro con ese id no existe");
             }

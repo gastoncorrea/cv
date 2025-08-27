@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
@@ -30,8 +31,9 @@ public class Contacto {
     @Size(min = 2, max = 200, message = "El link del titulo debe tener entre 2 y 200 caracteres")
     @Column(length = 200)
     private String url_contacto;
-    @Size(min = 2, max = 100, message = "El link de la imagen debe tener entre 2 y 100 caracteres")
-    @Column(length = 100)
+    @Lob // Indica que el atributo puede almacenar datos grandes (como imágenes)
+    @Size(max = 16_777_215)
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] logo_img;
     
     @ManyToOne

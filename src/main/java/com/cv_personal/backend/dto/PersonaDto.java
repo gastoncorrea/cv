@@ -22,7 +22,7 @@ public class PersonaDto {
     private LocalDate fecha_nacimiento;
     private String num_celular;
     
-    private List<Residencia> residencias;
+    private List<ResidenciaDto> residencias;
     
-    private List<Contacto> contactos;
+    private List<ContactoDto> contactos;
 }

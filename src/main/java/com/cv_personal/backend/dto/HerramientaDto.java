@@ -4,6 +4,7 @@
  */
 package com.cv_personal.backend.dto;
 
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,5 +14,6 @@ public class HerramientaDto {
     private Long id_herramienta;
     private String nombre;
     private String version;
+    
     
 }

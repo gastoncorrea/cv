@@ -7,6 +7,7 @@ package com.cv_personal.backend.dto;
 import com.cv_personal.backend.model.Herramienta;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +22,6 @@ public class EducacionDto {
     private String titulo;
     private String url_titulo;
     
-    private List<Herramienta> herramientas;
+    private Set<HerramientaDto> herramientas;
     
 }

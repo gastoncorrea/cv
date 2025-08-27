@@ -94,9 +94,9 @@ public class EducacionController {
                 findEducacion.setTitulo(educacion.getTitulo());
                 findEducacion.setUrl_titulo(educacion.getUrl_titulo());
                 
-                educService.saveEducacion(findEducacion);
+                EducacionDto educacionSave = educService.saveEducacion(findEducacion);
                 
-                return ResponseEntity.ok(findEducacion);
+                return ResponseEntity.ok(educacionSave);
             }else{
                 return ResponseEntity.badRequest().body("El registro con ese id no existe");
             }
