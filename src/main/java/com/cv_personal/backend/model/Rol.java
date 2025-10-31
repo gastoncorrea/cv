@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "rol")
-class Rol {
+public class Rol {
     
     @Id
     @GeneratedValue (strategy = GenerationType.SEQUENCE)
