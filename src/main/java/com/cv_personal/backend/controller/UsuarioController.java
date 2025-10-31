@@ -33,6 +33,7 @@ public class UsuarioController {
     @PostMapping("/save")
     public ResponseEntity<?> saveUsuario(@RequestBody Usuario usuario) {
         try {
+            usuario.setRol(0);
             usuarioService.saveUsuario(usuario);
             return ResponseEntity.ok("Exito al guardar el registro");
         } catch (DataAccessException e) {
