@@ -6,9 +6,10 @@ package com.cv_personal.backend.repository;
 
 import com.cv_personal.backend.model.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 
-
+@Repository
 public interface IRolRepository extends JpaRepository<Rol,Long>{
-    Rol findByName(String rol);
+    Rol findByNombre(String rol);
 }

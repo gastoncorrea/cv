@@ -5,6 +5,7 @@
 package com.cv_personal.backend.service;
 
 import com.cv_personal.backend.dto.UsuarioDto;
+import com.cv_personal.backend.model.Rol;
 import com.cv_personal.backend.model.Usuario;
 import java.util.List;
 
@@ -17,8 +18,13 @@ public interface IUsuarioService {
     
     public UsuarioDto findUsuario(Long id);
     
+    public Usuario getUsuario(String email);
+    
     public Usuario updateUsuario(Long id);
     
     public void deleteUsuario(Long id);
     
+    public Rol saveRol(Rol rol);
+    
+    public void addRoleToUser(String email, String roleName);
 }

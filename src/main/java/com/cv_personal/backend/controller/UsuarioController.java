@@ -5,10 +5,14 @@
 package com.cv_personal.backend.controller;
 
 import com.cv_personal.backend.dto.UsuarioDto;
+import com.cv_personal.backend.model.Rol;
 import com.cv_personal.backend.model.Usuario;
 import com.cv_personal.backend.service.IUsuarioService;
+import static com.fasterxml.jackson.databind.jsonFormatVisitors.JsonValueFormat.URI;
+import java.net.URI;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +25,21 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping("usuario")
+@RequestMapping("/usuario")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class UsuarioController {
 
-    @Autowired
-    private IUsuarioService usuarioService;
+    private final IUsuarioService usuarioService;
 
     @PostMapping("/save")
     public ResponseEntity<?> saveUsuario(@RequestBody Usuario usuario) {
         try {
-            usuario.setRol(0);
-            usuarioService.saveUsuario(usuario);
-            return ResponseEntity.ok("Exito al guardar el registro");
+            URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/usuario/save").build().toUri();
+            return ResponseEntity.created(uri).body(usuarioService.saveUsuario(usuario));
         } catch (DataAccessException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno al guardar en la base de datos");
@@ -47,7 +51,7 @@ public class UsuarioController {
     public ResponseEntity<?> getUsuario() {
         try {
             List<UsuarioDto> listUsuario = usuarioService.getUsuario();
-            return ResponseEntity.ok(listUsuario);
+            return ResponseEntity.ok().body(listUsuario);
         } catch (DataAccessException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno al guardar en la base de datos");
@@ -92,4 +96,23 @@ public class UsuarioController {
         }
     
     }
+    
+    @PostMapping("/rol/save")
+    public ResponseEntity<Rol> saveRol(@RequestBody Rol rol){
+        URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/usuario/rol/save").build().toUri();
+            return ResponseEntity.created(uri).body(usuarioService.saveRol(rol));
+    }
+    
+    @PostMapping("/rol/addtouser")
+    public ResponseEntity<?> saveRolToUser(@RequestBody RolToUserForm form){
+        usuarioService.addRoleToUser(form.getEmail(), form.getRolName());
+            return ResponseEntity.ok().build();
+    }
+    @Data
+    public class RolToUserForm{
+        private String email;
+        private String rolName;
+    }
 }
+
+    
