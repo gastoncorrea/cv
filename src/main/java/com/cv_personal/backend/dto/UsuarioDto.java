@@ -4,6 +4,9 @@
  */
 package com.cv_personal.backend.dto;
 
+import com.cv_personal.backend.model.Rol;
+import java.util.ArrayList;
+import java.util.Collection;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +15,8 @@ public class UsuarioDto {
     
     private Long id_usuario;
     private String email;
+    private String nombre;
     private String password;
-    private int rol;
+    private Collection<Rol> rol = new ArrayList<>();
     
 }

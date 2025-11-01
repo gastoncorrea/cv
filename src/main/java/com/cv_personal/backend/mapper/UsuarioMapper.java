@@ -16,6 +16,9 @@ public class UsuarioMapper {
         UsuarioDto usuarioDto = new UsuarioDto();
         usuarioDto.setId_usuario(usuario.getId_usuario());
         usuarioDto.setEmail(usuario.getEmail());
+        usuarioDto.setNombre(usuario.getNombre());
+        usuarioDto.setPassword(usuario.getPassword());
+        usuarioDto.setRol(usuario.getRol());
         
         return usuarioDto;
     }
