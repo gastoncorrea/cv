@@ -8,7 +8,6 @@ import com.cv_personal.backend.dto.UsuarioDto;
 import com.cv_personal.backend.model.Rol;
 import com.cv_personal.backend.model.Usuario;
 import com.cv_personal.backend.service.IUsuarioService;
-import static com.fasterxml.jackson.databind.jsonFormatVisitors.JsonValueFormat.URI;
 import java.net.URI;
 import java.util.List;
 import lombok.Data;

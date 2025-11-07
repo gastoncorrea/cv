@@ -12,24 +12,46 @@ import com.cv_personal.backend.repository.IRolRepository;
 import com.cv_personal.backend.repository.IUsuarioRepository;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
-public class UsuarioService implements IUsuarioService {
-    
+public class UsuarioService implements IUsuarioService, UserDetailsService {
     
     private final IUsuarioRepository usuarioRep;
-    
     private final IRolRepository rolRepo; 
-    
     private final UsuarioMapper usuarioMap;
+    private final PasswordEncoder passwordEncoder;
+    
+     @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRep.findByEmail(email);
+        if(usuario == null){
+            log.error("User not found in database");
+            throw new UsernameNotFoundException("User not found in database");
+        }else{
+            log.info("User found in database: {}",email);
+        }
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        usuario.getRol().forEach(rol -> {
+            authorities.add(new SimpleGrantedAuthority(rol.getNombre()));
+        });
+        
+        return new org.springframework.security.core.userdetails.User(usuario.getEmail(), usuario.getPassword(), authorities);
+    }
     
     @Override
     public UsuarioDto saveUsuario(Usuario usuario) {
         log.info("Saving new user {} to database", usuario.getEmail());
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario = usuarioRep.save(usuario);
         UsuarioDto usuarioDto = usuarioMap.toDto(usuario);
         return usuarioDto;

@@ -40,8 +40,8 @@ public class Usuario {
     @Size(min = 3, max = 40, message = "El nombre debe tener entre 3 y 15 caracteres")
     @Column(length = 40)
     private String nombre;
-    @Size(min = 8, max = 15, message = "El password debe tener de 8 a 15 caractes")
-    @Column(length = 15)
+    @Size(min = 8, max = 200, message = "El password debe tener de 8 a 200 caractes")
+    @Column(length = 200)
     private String password;
     
     @ManyToMany(fetch = FetchType.EAGER)
