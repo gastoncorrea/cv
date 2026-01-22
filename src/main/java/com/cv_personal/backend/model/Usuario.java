@@ -48,7 +48,7 @@ public class Usuario {
     private Collection<Rol> rol = new ArrayList<>();    
     
     
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JsonIgnore
     private Persona persona;
     
