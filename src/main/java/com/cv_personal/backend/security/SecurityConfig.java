@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.cv_personal.backend.security;
 
 import com.cv_personal.backend.filter.CustomAuthenticationFilter;
@@ -16,38 +12,68 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Configuration @EnableWebSecurity @RequiredArgsConstructor
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-    
+
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder PasswordEncoder;
-    
-    
+
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http)throws Exception{
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
         auth.userDetailsService(userDetailsService)
         .passwordEncoder(PasswordEncoder);
         return auth.build();
-        }
-        
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authManager)throws Exception{
         CustomAuthenticationFilter customAuthFilter = new CustomAuthenticationFilter(authManager);
         customAuthFilter.setFilterProcessesUrl("/login");
         http
+                .cors(withDefaults()) // Habilitar configuración global de CORS
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login/**","/usuario/save").permitAll()
-                .requestMatchers(HttpMethod.GET,"/**").hasAnyAuthority("ROL_USER","ROL_ADMIN")
-                .requestMatchers("/**").hasAuthority("ROL_ADMIN")
-                .anyRequest().authenticated()
+                        // Rutas Públicas de Lectura y Autenticación
+                        .requestMatchers("/login/**", "/usuario/save").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/persona/**",
+                                "/educacion/**",
+                                "/proyecto/**",
+                                "/herramienta/**",
+                                "/residencia/**",
+                                "/contacto/**").permitAll()
+                        // Todas las demás rutas requieren rol de ADMIN
+                        .anyRequest().hasAuthority("ROL_ADMIN")
                 )
                 .authenticationManager(authManager)
                 .addFilter(customAuthFilter);
-        
+
         return http.build();
     }
-    
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 }
