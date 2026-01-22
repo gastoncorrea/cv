@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("persona")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class PersonaController {
     
     @Autowired
@@ -60,22 +60,22 @@ public class PersonaController {
     }
     
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updatePersona(@PathVariable Long id,
-            @RequestBody Persona persona) {
+    public ResponseEntity<?> updatePersona(@PathVariable Long id, @RequestBody PersonaDto personaDto) {
         try {
-            Persona findPersona = personaService.updatePersona(id);
-            findPersona.setNombre(persona.getNombre());
-            findPersona.setApellido(persona.getApellido());
-            findPersona.setImagen_perfil(persona.getImagen_perfil());
-            findPersona.setDescripcion_mi(persona.getDescripcion_mi());
-            findPersona.setFecha_nacimiento(persona.getFecha_nacimiento());
-            findPersona.setNum_celular(persona.getNum_celular());
-            
-            personaService.savePersona(findPersona);
-            return ResponseEntity.ok("Datos personales actualizado con exito");
-        } catch (DataAccessException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error interno al intentar modificar el usuario");
+            PersonaDto updatedPersona = personaService.updatePersona(id, personaDto);
+            return ResponseEntity.ok(updatedPersona);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/imagen")
+    public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @org.springframework.web.bind.annotation.RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        try {
+            PersonaDto updatedPersona = personaService.updateProfileImage(id, file);
+            return ResponseEntity.ok(updatedPersona);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al subir la imagen: " + e.getMessage());
         }
     }
     

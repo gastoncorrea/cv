@@ -17,7 +17,7 @@ public class PersonaDto {
     private Long id_persona;
     private String nombre;
     private String apellido;
-    private byte[] imagen_perfil;
+    private String imagenUrl;
     private String descripcion_mi;
     private LocalDate fecha_nacimiento;
     private String num_celular;

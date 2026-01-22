@@ -28,7 +28,7 @@ public class PersonaMapper {
         personaDto.setId_persona(persona.getId_persona());
         personaDto.setNombre(persona.getNombre());
         personaDto.setApellido(persona.getApellido());
-        personaDto.setImagen_perfil(persona.getImagen_perfil());
+        personaDto.setImagenUrl(persona.getImagenUrl());
         personaDto.setDescripcion_mi(persona.getDescripcion_mi());
         personaDto.setFecha_nacimiento(persona.getFecha_nacimiento());
         personaDto.setNum_celular(persona.getNum_celular());

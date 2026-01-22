@@ -38,10 +38,8 @@ public class Persona {
     @Size(min = 2, max = 50, message = "El apellido debe tener entre 2 y 50 caracteres")
     @Column(length = 50, nullable = false)
     private String apellido;
-    @Lob // Indica que el atributo puede almacenar datos grandes (como imágenes)
-    @Size(max = 16_777_215)
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] imagen_perfil;
+    @Column(name = "imagen_url", length = 255)
+    private String imagenUrl;
     @Size(min = 8, max = 500, message = "La descripcion debe tener entre 8 y 500 caracteres")
     @Column(length = 500, nullable = false)
     private String descripcion_mi;

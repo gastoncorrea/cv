@@ -53,9 +53,58 @@ public class PersonaService implements IPersonaService  {
     }
 
     @Override
-    public Persona updatePersona(Long id) {
-        Persona persona = personaRep.findById(id).orElse(null);
-        return persona;
+    public PersonaDto updatePersona(Long id, PersonaDto personaDto) {
+        Persona persona = personaRep.findById(id).orElseThrow(() -> new RuntimeException("Persona no encontrada con id: " + id));
+
+        persona.setNombre(personaDto.getNombre());
+        persona.setApellido(personaDto.getApellido());
+        persona.setDescripcion_mi(personaDto.getDescripcion_mi());
+        persona.setFecha_nacimiento(personaDto.getFecha_nacimiento());
+        persona.setNum_celular(personaDto.getNum_celular());
+        // El campo de la imagen no se actualiza aquí a propósito.
+        // Se debe usar el método updateProfileImage para eso.
+
+        Persona updatedPersona = personaRep.save(persona);
+        return personaMap.toDto(updatedPersona);
     }
-    
+
+    private final java.nio.file.Path root = java.nio.file.Paths.get("uploads");
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        try {
+            java.nio.file.Files.createDirectories(root);
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("No se pudo inicializar la carpeta para las subidas de archivos.");
+        }
+    }
+
+    @Override
+    public PersonaDto updateProfileImage(Long id, org.springframework.web.multipart.MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                throw new RuntimeException("Falló al guardar un archivo vacío.");
+            }
+            
+            Persona persona = personaRep.findById(id).orElseThrow(() -> new RuntimeException("Persona no encontrada con id: " + id));
+
+            // Generar un nombre de archivo único
+            String originalFilename = file.getOriginalFilename();
+            String uniqueFilename = java.util.UUID.randomUUID().toString() + "_" + originalFilename;
+
+            // Guardar el archivo
+            java.nio.file.Path destinationFile = this.root.resolve(uniqueFilename).normalize().toAbsolutePath();
+            java.nio.file.Files.copy(file.getInputStream(), destinationFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            // Actualizar la entidad con la nueva URL
+            String fileUrl = "/uploads/" + uniqueFilename;
+            persona.setImagenUrl(fileUrl);
+            
+            Persona updatedPersona = personaRep.save(persona);
+            return personaMap.toDto(updatedPersona);
+
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Falló al guardar el archivo.", e);
+        }
+    }
 }

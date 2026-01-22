@@ -17,8 +17,10 @@ public interface IPersonaService {
     
     public PersonaDto findPersona(Long id);
     
-    public Persona updatePersona(Long id);
+    public PersonaDto updatePersona(Long id, PersonaDto personaDto);
     
     public void deletePersona(Long id);
+    
+    public PersonaDto updateProfileImage(Long id, org.springframework.web.multipart.MultipartFile file);
     
 }
