@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,16 +70,13 @@ public class UsuarioController {
     }
     
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateUsario(@PathVariable Long id,
-                                            @RequestBody Usuario usuario){
+    public ResponseEntity<?> updateUsario(@PathVariable Long id, @RequestBody UsuarioDto usuarioDto){
         try{
-            Usuario findUsuario = usuarioService.updateUsuario(id);
-            findUsuario.setEmail(usuario.getEmail());
-            findUsuario.setPassword(usuario.getPassword());
-            findUsuario.setRol(usuario.getRol());
-            usuarioService.saveUsuario(findUsuario);
-            return ResponseEntity.ok("Usuario actualizado con exito");
-        }catch(DataAccessException e){
+            UsuarioDto updatedUsuario = usuarioService.updateUsuario(id, usuarioDto);
+            return ResponseEntity.ok(updatedUsuario);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch(DataAccessException e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno al intentar modificar el usuario");
         }

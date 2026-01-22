@@ -8,6 +8,7 @@ import com.cv_personal.backend.filter.CustomAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,7 +39,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login/**").permitAll()
+                .requestMatchers("/login/**","/usuario/save").permitAll()
+                .requestMatchers(HttpMethod.GET,"/**").hasAnyAuthority("ROL_USER","ROL_ADMIN")
+                .requestMatchers("/**").hasAuthority("ROL_ADMIN")
                 .anyRequest().authenticated()
                 )
                 .authenticationManager(authManager)

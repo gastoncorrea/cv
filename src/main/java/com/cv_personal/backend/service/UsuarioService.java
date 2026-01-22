@@ -83,9 +83,19 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
     }
 
     @Override
-    public Usuario updateUsuario(Long id) {
-        Usuario usuario = usuarioRep.findById(id).orElse(null);
-        return usuario;
+    public UsuarioDto updateUsuario(Long id, UsuarioDto usuarioDto) {
+        Usuario usuario = usuarioRep.findById(id).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con id: " + id));
+        
+        usuario.setEmail(usuarioDto.getEmail());
+        usuario.setNombre(usuarioDto.getNombre());
+        usuario.setRol(usuarioDto.getRol());
+        
+        if (usuarioDto.getPassword() != null && !usuarioDto.getPassword().trim().isEmpty()) {
+            usuario.setPassword(passwordEncoder.encode(usuarioDto.getPassword()));
+        }
+        
+        Usuario updatedUsuario = usuarioRep.save(usuario);
+        return usuarioMap.toDto(updatedUsuario);
     }
 
     @Override

@@ -20,7 +20,7 @@ public interface IUsuarioService {
     
     public Usuario getUsuario(String email);
     
-    public Usuario updateUsuario(Long id);
+    public UsuarioDto updateUsuario(Long id, UsuarioDto usuarioDto);
     
     public void deleteUsuario(Long id);
     
