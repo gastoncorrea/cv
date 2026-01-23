@@ -1,6 +1,7 @@
 package com.cv_personal.backend.security;
 
 import com.cv_personal.backend.filter.CustomAuthenticationFilter;
+import com.cv_personal.backend.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +30,7 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder PasswordEncoder;
+    private final CustomAuthorizationFilter customAuthorizationFilter;
 
 
     @Bean
@@ -47,7 +50,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Rutas Públicas de Lectura y Autenticación
-                        .requestMatchers("/login/**", "/usuario/save").permitAll()
+                        .requestMatchers("/login/**", "/usuario/save", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/persona/**",
                                 "/educacion/**",
@@ -56,10 +59,11 @@ public class SecurityConfig {
                                 "/residencia/**",
                                 "/contacto/**").permitAll()
                         // Todas las demás rutas requieren rol de ADMIN
-                        .anyRequest().hasAuthority("ROL_ADMIN")
+                        .anyRequest().hasAuthority("ROLE_ADMIN")
                 )
                 .authenticationManager(authManager)
-                .addFilter(customAuthFilter);
+                .addFilter(customAuthFilter)
+                .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

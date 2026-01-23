@@ -40,7 +40,9 @@ public class PersonaMapper {
     }
    
     public List<ContactoDto> listContactoMapper(List<Contacto> listContacto){
-        
+        if (listContacto == null) {
+            return new ArrayList<>();
+        }
         List<ContactoDto> listContactoDto = new ArrayList<>();
         
         for (Contacto contacto : listContacto){
@@ -51,7 +53,9 @@ public class PersonaMapper {
     }
     
     public List<ResidenciaDto> listResidenciaMapper(List<Residencia> listResidencia){
-        
+        if (listResidencia == null) {
+            return new ArrayList<>();
+        }
         List<ResidenciaDto> listResidenciaDto = new ArrayList<>();
         
         for (Residencia Residencia : listResidencia){
