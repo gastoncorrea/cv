@@ -7,20 +7,35 @@ package com.cv_personal.backend.service;
 import com.cv_personal.backend.dto.PersonaDto;
 import com.cv_personal.backend.mapper.PersonaMapper;
 import com.cv_personal.backend.model.Persona;
+import com.cv_personal.backend.model.Usuario; // Import Usuario
 import com.cv_personal.backend.repository.IPersonaRepository;
+import com.cv_personal.backend.repository.IUsuarioRepository; // Import IUsuarioRepository
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.hibernate.Session;
 
 @Service
 public class PersonaService implements IPersonaService  {
     
+    private static final Logger logger = LoggerFactory.getLogger(PersonaService.class);
+
     @Autowired
     private IPersonaRepository personaRep;
     
     @Autowired
+    private IUsuarioRepository usuarioRep; // Inject IUsuarioRepository
+
+    @Autowired
     private PersonaMapper personaMap;
+
+    @Autowired
+    private EntityManager entityManager;
     
     @Override
     public PersonaDto savePersona(Persona persona) {
@@ -48,19 +63,58 @@ public class PersonaService implements IPersonaService  {
     }
 
     @Override
+    @Transactional
     public void deletePersona(Long id) {
-        personaRep.deleteById(id);
+        // Find the Persona entity by its ID
+        personaRep.findById(id).ifPresent(persona -> {
+            // Get the associated Usuario
+            Usuario usuario = persona.getUsuario();
+
+            // If a Usuario is associated
+            if (usuario != null) {
+                // Since Persona is the owning side of the relationship
+                // (it has the @JoinColumn), we need to break the link
+                // from the Persona side. We also nullify the reference
+                // in the Usuario object to ensure consistency within the
+                // persistence context.
+
+                // Break the link on the inverse side (Usuario)
+                usuario.setPersona(null);
+                
+                // Break the link on the owning side (Persona)
+                persona.setUsuario(null);
+
+                // Note: We don't need to save the usuario or persona entities
+                // explicitly here because the changes are managed within the
+                // transactional context. Hibernate will detect these changes
+                // and update the objects. However, let's proceed to delete the persona.
+            }
+
+            // Now, delete the Persona. The transaction will ensure that the
+            // link is broken before the deletion occurs.
+            personaRep.delete(persona);
+        });
     }
 
     @Override
     public PersonaDto updatePersona(Long id, PersonaDto personaDto) {
         Persona persona = personaRep.findById(id).orElseThrow(() -> new RuntimeException("Persona no encontrada con id: " + id));
 
-        persona.setNombre(personaDto.getNombre());
-        persona.setApellido(personaDto.getApellido());
-        persona.setDescripcion_mi(personaDto.getDescripcion_mi());
-        persona.setFecha_nacimiento(personaDto.getFecha_nacimiento());
-        persona.setNum_celular(personaDto.getNum_celular());
+        if (personaDto.getNombre() != null && !personaDto.getNombre().trim().isEmpty()) {
+            persona.setNombre(personaDto.getNombre());
+        }
+        if (personaDto.getApellido() != null && !personaDto.getApellido().trim().isEmpty()) {
+            persona.setApellido(personaDto.getApellido());
+        }
+        if (personaDto.getDescripcion_mi() != null && !personaDto.getDescripcion_mi().trim().isEmpty()) {
+            persona.setDescripcion_mi(personaDto.getDescripcion_mi());
+        }
+        if (personaDto.getFecha_nacimiento() != null) { // LocalDate can be null
+            persona.setFecha_nacimiento(personaDto.getFecha_nacimiento());
+        }
+        if (personaDto.getNum_celular() != null && !personaDto.getNum_celular().trim().isEmpty()) {
+            persona.setNum_celular(personaDto.getNum_celular());
+        }
         // El campo de la imagen no se actualiza aquí a propósito.
         // Se debe usar el método updateProfileImage para eso.
 
