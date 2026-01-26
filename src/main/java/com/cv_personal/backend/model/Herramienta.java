@@ -24,7 +24,7 @@ import lombok.Setter;
 public class Herramienta {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_herramienta;
     @Column(length = 45, nullable = false)
     private String nombre;

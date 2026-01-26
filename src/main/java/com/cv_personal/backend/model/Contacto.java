@@ -23,7 +23,7 @@ import lombok.Setter;
 public class Contacto {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_contacto;
     @Size(min = 2, max = 45, message = "El nombre de la institucion debe tener entre 2 y 45 caracteres")
     @Column(length = 45, nullable = false)

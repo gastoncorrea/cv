@@ -22,7 +22,7 @@ import lombok.Setter;
 public class Residencia {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_residencia;
     @Size(min = 2, max = 45, message = "La localidad debe tener entre 2 y 45 caracteres")
     @Column(length = 45)

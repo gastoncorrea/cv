@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 public class Rol {
     
     @Id
-    @GeneratedValue (strategy = GenerationType.SEQUENCE)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id_rol;
     @Size(min = 3, max = 40, message = "El nombre debe tener entre 3 y 15 caracteres")
     @Column(length = 40)
