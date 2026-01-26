@@ -9,33 +9,21 @@ import com.cv_personal.backend.mapper.PersonaMapper;
 import com.cv_personal.backend.model.Persona;
 import com.cv_personal.backend.model.Usuario; // Import Usuario
 import com.cv_personal.backend.repository.IPersonaRepository;
-import com.cv_personal.backend.repository.IUsuarioRepository; // Import IUsuarioRepository
-import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.hibernate.Session;
+
 
 @Service
 public class PersonaService implements IPersonaService  {
-    
-    private static final Logger logger = LoggerFactory.getLogger(PersonaService.class);
 
     @Autowired
     private IPersonaRepository personaRep;
     
     @Autowired
-    private IUsuarioRepository usuarioRep; // Inject IUsuarioRepository
-
-    @Autowired
     private PersonaMapper personaMap;
-
-    @Autowired
-    private EntityManager entityManager;
     
     @Override
     public PersonaDto savePersona(Persona persona) {
