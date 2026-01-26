@@ -17,11 +17,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("persona")
 public class PersonaController {
     
+    private static final Logger logger = LoggerFactory.getLogger(PersonaController.class);
+
     @Autowired
     private IPersonaService personaService;
     
@@ -80,12 +84,17 @@ public class PersonaController {
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePersona(@PathVariable Long id){
+        logger.info("Received DELETE request for Persona with ID: {}", id); // Added log
         try{
             personaService.deletePersona(id);
-            return ResponseEntity.ok("Usuario eliminado con exito");
-        }catch (DataAccessException e){
+            return ResponseEntity.ok("Persona eliminado con exito");
+        }catch (DataAccessException e){ // Catch more specific exception first
+            logger.error("DataAccessException when deleting Persona with ID {}: {}", id, e.getMessage()); // Added log
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno al intentar eliminar el usuario");
+        }catch (RuntimeException e) { // Catch more general exception second
+            logger.warn("RuntimeException when deleting Persona with ID {}: {}", id, e.getMessage()); // Added log
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     
     }

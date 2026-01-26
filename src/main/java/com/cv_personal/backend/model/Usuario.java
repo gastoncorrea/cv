@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 public class Usuario {
     
     @Id
-    @GeneratedValue (strategy = GenerationType.SEQUENCE)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id_usuario;
     @Email(message = "El formato del email es inválido")
     @Column(unique = true, nullable = false) 
@@ -48,7 +48,7 @@ public class Usuario {
     private Collection<Rol> rol = new ArrayList<>();    
     
     
-    @OneToOne(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @OneToOne(mappedBy = "usuario")
     @JsonIgnore
     private Persona persona;
     

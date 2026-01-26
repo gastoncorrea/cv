@@ -86,12 +86,24 @@ public class EducacionController {
         try{
             Educacion findEducacion = educService.updateEducacion(id);
             if(findEducacion != null){
-                findEducacion.setNombre_institucion(educacion.getNombre_institucion());
-                findEducacion.setLogo_imagen(educacion.getLogo_imagen());
-                findEducacion.setFecha_inicio(educacion.getFecha_inicio());
-                findEducacion.setFecha_fin(educacion.getFecha_fin());
-                findEducacion.setTitulo(educacion.getTitulo());
-                findEducacion.setUrl_titulo(educacion.getUrl_titulo());
+                if(educacion.getNombre_institucion() != null && !educacion.getNombre_institucion().trim().isEmpty()){
+                    findEducacion.setNombre_institucion(educacion.getNombre_institucion());
+                }
+                if(educacion.getLogo_imagen() != null && !educacion.getLogo_imagen().trim().isEmpty()){
+                    findEducacion.setLogo_imagen(educacion.getLogo_imagen());
+                }
+                if(educacion.getFecha_inicio() != null){ // LocalDate can be null
+                    findEducacion.setFecha_inicio(educacion.getFecha_inicio());
+                }
+                if(educacion.getFecha_fin() != null){ // LocalDate can be null
+                    findEducacion.setFecha_fin(educacion.getFecha_fin());
+                }
+                if(educacion.getTitulo() != null && !educacion.getTitulo().trim().isEmpty()){
+                    findEducacion.setTitulo(educacion.getTitulo());
+                }
+                if(educacion.getUrl_titulo() != null && !educacion.getUrl_titulo().trim().isEmpty()){
+                    findEducacion.setUrl_titulo(educacion.getUrl_titulo());
+                }
                 
                 EducacionDto educacionSave = educService.saveEducacion(findEducacion);
                 

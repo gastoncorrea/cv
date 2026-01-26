@@ -13,6 +13,6 @@ public class ContactoDto {
     private Long id_contacto;
     private String nombre;
     private String url_contacto;
-    private byte[] logo_img;
+    private String logo_img;
     
 }

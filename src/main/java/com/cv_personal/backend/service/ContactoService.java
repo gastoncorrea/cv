@@ -12,6 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class ContactoService implements IContactoService{
@@ -21,6 +28,17 @@ public class ContactoService implements IContactoService{
     
     @Autowired
     private ContactoMapper contacMap;
+    
+    private final Path root = Paths.get("uploads");
+
+    @PostConstruct
+    public void init() {
+        try {
+            Files.createDirectories(root);
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("No se pudo inicializar la carpeta para las subidas de archivos.", e);
+        }
+    }
     
     @Override
     public ContactoDto saveContacto(Contacto contacto) {
@@ -60,4 +78,31 @@ public class ContactoService implements IContactoService{
         contacRep.deleteById(id);
     }
     
+    @Override
+    public ContactoDto updateLogoImage(Long id, MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                throw new RuntimeException("Falló al guardar un archivo vacío.");
+            }
+            
+            Contacto contacto = contacRep.findById(id).orElseThrow(() -> new RuntimeException("Contacto no encontrado con id: " + id));
+
+            String originalFilename = file.getOriginalFilename();
+            String uniqueFilename = UUID.randomUUID().toString() + "_" + originalFilename;
+
+            Path destinationFile = this.root.resolve(uniqueFilename).normalize().toAbsolutePath();
+            Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+
+            String fileUrl = "/uploads/" + uniqueFilename;
+            contacto.setLogo_img(fileUrl);
+            
+            Contacto updatedContacto = contacRep.save(contacto);
+            return contacMap.toDto(updatedContacto);
+
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Falló al guardar el archivo.", e);
+        }
+    }
+    
 }
+

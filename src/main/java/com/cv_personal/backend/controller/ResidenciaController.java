@@ -84,15 +84,23 @@ public class ResidenciaController {
                                                 @RequestBody Residencia residencia){
     
         try{
-            Residencia findResidencia = resiService.updateResidencia(id);
-            if(findResidencia != null){
-                findResidencia.setLocalidad(residencia.getLocalidad());
-                findResidencia.setProvincia(residencia.getProvincia());
-                findResidencia.setPais(residencia.getPais());
-                findResidencia.setNacionalidad(residencia.getNacionalidad());
+            Residencia existingResidencia = resiService.updateResidencia(id); // This fetches the existing entity
+            if(existingResidencia != null){
+                if(residencia.getLocalidad() != null && !residencia.getLocalidad().trim().isEmpty()){
+                    existingResidencia.setLocalidad(residencia.getLocalidad());
+                }
+                if(residencia.getProvincia() != null && !residencia.getProvincia().trim().isEmpty()){
+                    existingResidencia.setProvincia(residencia.getProvincia());
+                }
+                if(residencia.getPais() != null && !residencia.getPais().trim().isEmpty()){
+                    existingResidencia.setPais(residencia.getPais());
+                }
+                if(residencia.getNacionalidad() != null && !residencia.getNacionalidad().trim().isEmpty()){
+                    existingResidencia.setNacionalidad(residencia.getNacionalidad());
+                }
                 
-                
-                ResidenciaDto residenciaSave = resiService.saveResidencia(findResidencia);
+                // Save the updated entity
+                ResidenciaDto residenciaSave = resiService.saveResidencia(existingResidencia);
                 
                 return ResponseEntity.ok(residenciaSave);
             }else{

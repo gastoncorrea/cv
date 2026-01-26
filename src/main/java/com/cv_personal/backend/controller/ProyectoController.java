@@ -86,11 +86,21 @@ public class ProyectoController {
         try{
             Proyecto findProyecto = proyService.updateProyecto(id);
             if(findProyecto != null){
-                findProyecto.setNombre(proyecto.getNombre());
-                findProyecto.setDescripcion(proyecto.getDescripcion());
-                findProyecto.setUrl(proyecto.getUrl());
-                findProyecto.setInicio(proyecto.getInicio());
-                findProyecto.setFin(proyecto.getFin());
+                if(proyecto.getNombre() != null && !proyecto.getNombre().trim().isEmpty()){
+                    findProyecto.setNombre(proyecto.getNombre());
+                }
+                if(proyecto.getDescripcion() != null && !proyecto.getDescripcion().trim().isEmpty()){
+                    findProyecto.setDescripcion(proyecto.getDescripcion());
+                }
+                if(proyecto.getUrl() != null && !proyecto.getUrl().trim().isEmpty()){
+                    findProyecto.setUrl(proyecto.getUrl());
+                }
+                if(proyecto.getInicio() != null){ // LocalDate can be null, no empty check needed
+                    findProyecto.setInicio(proyecto.getInicio());
+                }
+                if(proyecto.getFin() != null){ // LocalDate can be null, no empty check needed
+                    findProyecto.setFin(proyecto.getFin());
+                }
                 
                 ProyectoDto proyectoSave = proyService.saveProyecto(findProyecto);
                 

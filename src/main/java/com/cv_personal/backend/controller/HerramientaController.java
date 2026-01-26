@@ -86,8 +86,12 @@ public class HerramientaController {
         try{
             Herramienta findHerramienta = herrService.updateHerramienta(id);
             if(findHerramienta != null){
-                findHerramienta.setNombre(herramienta.getNombre());
-                findHerramienta.setVersion(herramienta.getVersion());                
+                if(herramienta.getNombre() != null && !herramienta.getNombre().trim().isEmpty()){
+                    findHerramienta.setNombre(herramienta.getNombre());
+                }
+                if(herramienta.getVersion() != null && !herramienta.getVersion().trim().isEmpty()){
+                    findHerramienta.setVersion(herramienta.getVersion());
+                }
                 
                 HerramientaDto herramientaSave = herrService.saveHerramienta(findHerramienta);
                 

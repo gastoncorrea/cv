@@ -86,9 +86,17 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
     public UsuarioDto updateUsuario(Long id, UsuarioDto usuarioDto) {
         Usuario usuario = usuarioRep.findById(id).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con id: " + id));
         
-        usuario.setEmail(usuarioDto.getEmail());
-        usuario.setNombre(usuarioDto.getNombre());
-        usuario.setRol(usuarioDto.getRol());
+        if (usuarioDto.getEmail() != null && !usuarioDto.getEmail().trim().isEmpty()) {
+            usuario.setEmail(usuarioDto.getEmail());
+        }
+        if (usuarioDto.getNombre() != null && !usuarioDto.getNombre().trim().isEmpty()) {
+            usuario.setNombre(usuarioDto.getNombre());
+        }
+        // Assuming Rol in UsuarioDto is a List<Rol> or similar that can be null
+        // If it's a DTO for Rol, further mapping logic might be needed here
+        if (usuarioDto.getRol() != null && !usuarioDto.getRol().isEmpty()) { // Add check for empty list as well
+            usuario.setRol(usuarioDto.getRol());
+        }
         
         if (usuarioDto.getPassword() != null && !usuarioDto.getPassword().trim().isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(usuarioDto.getPassword()));

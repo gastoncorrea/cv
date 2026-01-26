@@ -19,5 +19,7 @@ public interface IContactoService {
     
     public Contacto updateContacto(Long id);
     
+    public ContactoDto updateLogoImage(Long id, org.springframework.web.multipart.MultipartFile file);
+    
     public void deleteContacto(Long id);
 }
