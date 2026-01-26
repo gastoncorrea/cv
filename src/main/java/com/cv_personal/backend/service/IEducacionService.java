@@ -6,6 +6,7 @@ package com.cv_personal.backend.service;
 
 import com.cv_personal.backend.dto.EducacionDto;
 import com.cv_personal.backend.model.Educacion;
+import com.cv_personal.backend.dto.EducacionHerramientasDto; // Import DTO
 import java.util.List;
 
 
@@ -20,4 +21,7 @@ public interface IEducacionService {
     public Educacion updateEducacion(Long id);
     
     public void deleteEducacion(Long id);
+    
+    public EducacionDto addHerramientasToEducacion(EducacionHerramientasDto dto);
 }
+

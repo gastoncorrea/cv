@@ -5,13 +5,18 @@
 package com.cv_personal.backend.service;
 
 import com.cv_personal.backend.dto.EducacionDto;
+import com.cv_personal.backend.dto.EducacionHerramientasDto;
+import com.cv_personal.backend.dto.HerramientaRequestDto;
 import com.cv_personal.backend.mapper.EducacionMapper;
 import com.cv_personal.backend.model.Educacion;
+import com.cv_personal.backend.model.Herramienta;
 import com.cv_personal.backend.repository.IEducacionRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional; // Import Optional
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EducacionService implements IEducacionService{
@@ -21,6 +26,9 @@ public class EducacionService implements IEducacionService{
     
     @Autowired
     private EducacionMapper educMap;
+
+    @Autowired
+    private IHerramientaService herramientaService; // Inject IHerramientaService
     
     @Override
     public EducacionDto saveEducacion(Educacion educacion) {
@@ -58,5 +66,41 @@ public class EducacionService implements IEducacionService{
         Educacion educacion = educRepository.findById(id).orElse(null);
         return educacion;
     }
-    
+
+    @Override
+    @Transactional
+    public EducacionDto addHerramientasToEducacion(EducacionHerramientasDto dto) {
+        Educacion educacion = educRepository.findById(dto.getEducacionId())
+                                    .orElseThrow(() -> new RuntimeException("Educacion not found with ID: " + dto.getEducacionId()));
+
+        for (HerramientaRequestDto herramientaDto : dto.getHerramientas()) {
+            Herramienta herramienta;
+            if (herramientaDto.getId() != null) {
+                // Herramienta already exists, fetch it
+                herramienta = herramientaService.updateHerramienta(herramientaDto.getId()); // updateHerramienta returns the model
+                if (herramienta == null) {
+                    throw new RuntimeException("Herramienta not found with ID: " + herramientaDto.getId());
+                }
+            } else {
+                // Herramienta does not exist, create it
+                herramienta = new Herramienta();
+                herramienta.setNombre(herramientaDto.getNombre());
+                herramienta.setVersion(herramientaDto.getVersion());
+                herramientaService.saveHerramienta(herramienta); // Save and update its ID
+            }
+
+            // Establish ManyToMany relationship
+            educacion.getHerramientas().add(herramienta);
+            herramienta.getEstudios().add(educacion); // Maintain bidirectional consistency
+
+            // Note: Saving individual entities here might not be strictly necessary if Educacion is saved at the end
+            // but explicitly saving the owning side (Herramienta) ensures the join table is updated.
+            // Also, educacion.getHerramientas().add(herramienta) will track the change within the transaction.
+        }
+        
+        // Save the updated Educacion which will cascade the relationship changes if properly configured
+        Educacion updatedEducacion = educRepository.save(educacion);
+        return educMap.toDto(updatedEducacion);
+    }
 }
+

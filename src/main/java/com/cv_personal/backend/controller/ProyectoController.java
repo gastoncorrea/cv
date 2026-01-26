@@ -6,6 +6,7 @@ package com.cv_personal.backend.controller;
 
 import com.cv_personal.backend.dto.ProyectoDto;
 import com.cv_personal.backend.model.Proyecto;
+import com.cv_personal.backend.dto.ProyectoHerramientasDto; // Import DTO
 import com.cv_personal.backend.service.IProyectoService;
 import java.util.List;
 import java.util.Map;
@@ -113,5 +114,16 @@ public class ProyectoController {
                     .body("Error en el servidor el intentar modificar el registro");
         }
     }
-    
+
+    @PostMapping("/herramientas")
+    public ResponseEntity<?> addHerramientasToProyecto(@RequestBody ProyectoHerramientasDto dto) {
+        try {
+            ProyectoDto updatedProyecto = proyService.addHerramientasToProyecto(dto);
+            return ResponseEntity.ok(updatedProyecto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al añadir herramientas al proyecto: " + e.getMessage());
+        }
+    }
 }

@@ -6,6 +6,7 @@ package com.cv_personal.backend.controller;
 
 import com.cv_personal.backend.dto.EducacionDto;
 import com.cv_personal.backend.model.Educacion;
+import com.cv_personal.backend.dto.EducacionHerramientasDto; // Import DTO
 import com.cv_personal.backend.service.IEducacionService;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +116,16 @@ public class EducacionController {
                     .body("Error en el servidor el intentar modificar el registro");
         }
     }
-    
-    
+
+    @PostMapping("/herramientas")
+    public ResponseEntity<?> addHerramientasToEducacion(@RequestBody EducacionHerramientasDto dto) {
+        try {
+            EducacionDto updatedEducacion = educService.addHerramientasToEducacion(dto);
+            return ResponseEntity.ok(updatedEducacion);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al añadir herramientas a la educación: " + e.getMessage());
+        }
+    }
 }
