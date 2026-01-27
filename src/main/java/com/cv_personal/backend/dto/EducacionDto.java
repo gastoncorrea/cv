@@ -4,9 +4,7 @@
  */
 package com.cv_personal.backend.dto;
 
-import com.cv_personal.backend.model.Herramienta;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;

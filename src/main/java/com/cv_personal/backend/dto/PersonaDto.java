@@ -4,8 +4,6 @@
  */
 package com.cv_personal.backend.dto;
 
-import com.cv_personal.backend.model.Contacto;
-import com.cv_personal.backend.model.Residencia;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;

@@ -13,7 +13,6 @@ import com.cv_personal.backend.model.Proyecto;
 import com.cv_personal.backend.repository.IProyectoRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional; // Import Optional
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
