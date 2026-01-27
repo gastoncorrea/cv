@@ -131,7 +131,7 @@ Implemented null and empty string checks for `nombre` and `version` fields from 
 Implemented null and empty string checks for `nombre_institucion`, `logo_imagen`, `fecha_inicio`, `fecha_fin`, `titulo`, and `url_titulo` fields from the incoming `Educacion` object within the `updateEducacion` controller method. This prevents `null` values from overwriting existing data when not provided in a PUT request.
 
 **Files Modified:**
-- `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
+- `src/main/java/com/cv_personal.backend/controller/EducacionController.java`
 
 ### Fixed partial update issue in `ContactoController.java`'s `updateContacto` method and added logo upload endpoint
 
@@ -242,11 +242,11 @@ Modified the `@GeneratedValue` strategy for `@Id` fields in several model entiti
 
 **Files Modified:**
 - `src/main/java/com.cv_personal.backend/model/Contacto.java`
-- `src/main/java/com/cv_personal.backend/model/Educacion.java`
+- `src/main/java/com.cv_personal.backend/model/Educacion.java`
 - `src/main/java/com/cv_personal.backend/model/Herramienta.java`
 - `src/main/java/com/cv_personal.backend/model/Proyecto.java`
 - `src/main/java/com/cv_personal.backend/model/Residencia.java`
-- `src/main/java/com.cv_personal.backend/model/Rol.java`
+- `src/main/java/com/cv_personal.backend/model/Rol.java`
 
 ### Removed unused imports and variables
 
@@ -256,9 +256,9 @@ Removed unused imports and variables across several Java files to improve code c
 **Files Modified:**
 - `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
 - `src/main/java/com.cv_personal.backend/controller/PersonaController.java`
-- `src/main/java/com/cv_personal.backend/model/Persona.java`
+- `src/main/java/com.cv_personal.backend/model/Persona.java`
 - `src/main/java/com.cv_personal.backend/model/Usuario.java`
-- `src/main/java/com.cv_personal.backend/service/PersonaService.java`
+- `src/main/java/com/cv_personal.backend/service/PersonaService.java`
 
 ### Implement ManyToMany relationship for Educacion/Proyecto and Herramienta
 
@@ -271,11 +271,11 @@ This includes:
 
 **Files Modified:**
 - `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
-- `src/main/java/com.cv_personal.backend/controller/ProyectoController.java`
+- `src/main/java/com/cv_personal.backend/controller/ProyectoController.java`
 - `src/main/java/com/cv_personal.backend/service/EducacionService.java`
 - `src/main/java/com/cv_personal.backend/service/IEducacionService.java`
-- `src/main/java/com/cv_personal.backend/service/IProyectoService.java`
-- `src/main/java/com/cv_personal.backend/service/ProyectoService.java`
+- `src/main/java/com.cv_personal.backend/service/IProyectoService.java`
+- `src/main/java/com.cv_personal.backend/service/ProyectoService.java`
 - `src/main/java/com/cv_personal.backend/dto/EducacionHerramientasDto.java` (new file)
 - `src/main/java/com/cv_personal.backend/dto/HerramientaRequestDto.java` (new file)
 - `src/main/java/com/cv_personal.backend/dto/ProyectoHerramientasDto.java` (new file)
@@ -291,16 +291,16 @@ Implemented functionality to retrieve lists of associated entities (Educacion, R
 - Fixed a duplicated class definition in `ResidenciaService.java`.
 
 **Files Modified:**
-- `src/main/java/com/cv_personal.backend/service/IEducacionService.java`
+- `src/main/java/com.cv_personal.backend/service/IEducacionService.java`
 - `src/main/java/com/cv_personal.backend/service/EducacionService.java`
-- `src/main/java/com/cv_personal.backend/repository/IEducacionRepository.java`
+- `src/main/java/com.cv_personal.backend/repository/IEducacionRepository.java`
 - `src/main/java/com/cv_personal.backend/controller/EducacionController.java`
 - `src/main/java/com/cv_personal.backend/service/IResidenciaService.java`
-- `src/main/java/com/cv_personal.backend/service/ResidenciaService.java`
+- `src/main/java/com.cv_personal.backend/service/ResidenciaService.java`
 - `src/main/java/com/cv_personal.backend/controller/ResidenciaController.java`
-- `src/main/java/com/cv_personal.backend/service/IProyectoService.java`
-- `src/main/java/com/cv_personal.backend/service/ProyectoService.java`
-- `src/main/java/com/cv_personal.backend/controller/ProyectoController.java`
+- `src/main/java/com.cv_personal.backend/service/IProyectoService.java`
+- `src/main/java/com.cv_personal.backend/service/ProyectoService.java`
+- `src/main/java/com.cv_personal.backend/controller/ProyectoController.java`
 - `src/main/java/com/cv_personal.backend/service/IContactoService.java`
-- `src/main/java/com/cv_personal.backend/service/ContactoService.java`
+- `src/main/java/com.cv_personal.backend/service/ContactoService.java`
 - `src/main/java/com/cv_personal.backend/controller/ContactoController.java`
