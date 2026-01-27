@@ -9,7 +9,9 @@ import com.cv_personal.backend.dto.ProyectoHerramientasDto;
 import com.cv_personal.backend.dto.HerramientaRequestDto;
 import com.cv_personal.backend.mapper.ProyectoMapper;
 import com.cv_personal.backend.model.Herramienta;
+import com.cv_personal.backend.model.Persona; // Import Persona
 import com.cv_personal.backend.model.Proyecto;
+import com.cv_personal.backend.repository.IPersonaRepository; // Import IPersonaRepository
 import com.cv_personal.backend.repository.IProyectoRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,5 +97,21 @@ public class ProyectoService implements IProyectoService{
         // Save the updated Proyecto which will cascade the relationship changes if properly configured
         Proyecto updatedProyecto = proRepo.save(proyecto);
         return proyMap.toDto(updatedProyecto);
+    }
+
+    @Autowired
+    private IPersonaRepository personaRepository; // Inject IPersonaRepository
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProyectoDto> getProyectoByPersonaId(Long personaId) {
+        Persona persona = personaRepository.findById(personaId)
+                                .orElseThrow(() -> new RuntimeException("Persona not found with ID: " + personaId));
+        
+        List<ProyectoDto> listProyectoDto = new ArrayList<>();
+        for (Proyecto proyecto : persona.getProyectos()) { // Access proyectos directly
+            listProyectoDto.add(proyMap.toDto(proyecto));
+        }
+        return listProyectoDto;
     }
 }

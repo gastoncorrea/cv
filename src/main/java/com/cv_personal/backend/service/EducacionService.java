@@ -10,12 +10,16 @@ import com.cv_personal.backend.dto.HerramientaRequestDto;
 import com.cv_personal.backend.mapper.EducacionMapper;
 import com.cv_personal.backend.model.Educacion;
 import com.cv_personal.backend.model.Herramienta;
+import com.cv_personal.backend.model.Persona; // Import Persona
 import com.cv_personal.backend.repository.IEducacionRepository;
+import com.cv_personal.backend.repository.IPersonaRepository; // Import IPersonaRepository
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
 
 @Service
 public class EducacionService implements IEducacionService{
@@ -28,7 +32,9 @@ public class EducacionService implements IEducacionService{
 
     @Autowired
     private IHerramientaService herramientaService; // Inject IHerramientaService
-    
+
+    @Autowired
+    private IPersonaRepository personaRepository; // Inject IPersonaRepository    
     @Override
     public EducacionDto saveEducacion(Educacion educacion) {
         Educacion educacionSave = educRepository.save(educacion);
@@ -101,5 +107,17 @@ public class EducacionService implements IEducacionService{
         Educacion updatedEducacion = educRepository.save(educacion);
         return educMap.toDto(updatedEducacion);
     }
-}
 
+    @Override
+    @Transactional(readOnly = true) // Add Transactional and readOnly for fetching
+    public List<EducacionDto> getEducacionByPersonaId(Long personaId) {
+        Persona persona = personaRepository.findById(personaId)
+                                .orElseThrow(() -> new RuntimeException("Persona not found with ID: " + personaId));
+        
+        List<EducacionDto> listEducacionDto = new ArrayList<>();
+        for (Educacion educacion : persona.getEstudios()) { // Access estudios directly
+            listEducacionDto.add(educMap.toDto(educacion));
+        }
+        return listEducacionDto;
+    }
+}

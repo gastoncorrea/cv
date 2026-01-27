@@ -23,5 +23,7 @@ public interface IEducacionService {
     public void deleteEducacion(Long id);
     
     public EducacionDto addHerramientasToEducacion(EducacionHerramientasDto dto);
+    
+    public List<EducacionDto> getEducacionByPersonaId(Long personaId);
 }
 

@@ -7,7 +7,9 @@ package com.cv_personal.backend.service;
 import com.cv_personal.backend.dto.ContactoDto;
 import com.cv_personal.backend.mapper.ContactoMapper;
 import com.cv_personal.backend.model.Contacto;
+import com.cv_personal.backend.model.Persona; // Import Persona
 import com.cv_personal.backend.repository.IContactoRepository;
+import com.cv_personal.backend.repository.IPersonaRepository; // Import IPersonaRepository
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import jakarta.annotation.PostConstruct;
-
+import org.springframework.transaction.annotation.Transactional; // Import Transactional
 @Service
 public class ContactoService implements IContactoService{
     
@@ -103,6 +105,20 @@ public class ContactoService implements IContactoService{
             throw new RuntimeException("Falló al guardar el archivo.", e);
         }
     }
-    
-}
 
+    @Autowired
+    private IPersonaRepository personaRepository; // Inject IPersonaRepository
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ContactoDto> getContactoByPersonaId(Long personaId) {
+        Persona persona = personaRepository.findById(personaId)
+                                .orElseThrow(() -> new RuntimeException("Persona not found with ID: " + personaId));
+        
+        List<ContactoDto> listContactoDto = new ArrayList<>();
+        for (Contacto contacto : persona.getContacto()) { // Access contacto directly
+            listContactoDto.add(contacMap.toDto(contacto));
+        }
+        return listContactoDto;
+    }
+}

@@ -125,4 +125,19 @@ public class ProyectoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al añadir herramientas al proyecto: " + e.getMessage());
         }
     }
+
+    @GetMapping("/persona/{personaId}")
+    public ResponseEntity<?> getProyectoByPersonaId(@PathVariable Long personaId) {
+        try {
+            List<ProyectoDto> proyectos = proyService.getProyectoByPersonaId(personaId);
+            if (proyectos.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron proyectos para la Persona con ID: " + personaId);
+            }
+            return ResponseEntity.ok(proyectos);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener proyectos por ID de Persona: " + e.getMessage());
+        }
+    }
 }

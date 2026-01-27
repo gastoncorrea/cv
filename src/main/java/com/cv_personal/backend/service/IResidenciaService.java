@@ -21,4 +21,5 @@ public interface IResidenciaService {
     
     public void deleteResidencia(Long id);
     
+    public List<ResidenciaDto> getResidenciaByPersonaId(Long personaId);
 }

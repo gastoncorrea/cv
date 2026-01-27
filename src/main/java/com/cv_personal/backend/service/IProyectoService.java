@@ -23,5 +23,6 @@ public interface IProyectoService {
     public void deleteProyecto(Long id);
     
     public ProyectoDto addHerramientasToProyecto(ProyectoHerramientasDto dto);
+    
+    public List<ProyectoDto> getProyectoByPersonaId(Long personaId);
 }
-

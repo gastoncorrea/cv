@@ -110,4 +110,19 @@ public class ResidenciaController {
                     .body("Error en el servidor el intentar modificar el registro");
         }
     }
+
+    @GetMapping("/persona/{personaId}")
+    public ResponseEntity<?> getResidenciaByPersonaId(@PathVariable Long personaId) {
+        try {
+            List<ResidenciaDto> residencias = resiService.getResidenciaByPersonaId(personaId);
+            if (residencias.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron residencias para la Persona con ID: " + personaId);
+            }
+            return ResponseEntity.ok(residencias);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener residencias por ID de Persona: " + e.getMessage());
+        }
+    }
 }

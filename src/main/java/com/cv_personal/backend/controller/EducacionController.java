@@ -128,4 +128,17 @@ public class EducacionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al añadir herramientas a la educación: " + e.getMessage());
         }
     }
+
+    @GetMapping("/persona/{personaId}")
+    public ResponseEntity<?> getEducacionByPersonaId(@PathVariable Long personaId) {
+        try {
+            List<EducacionDto> educaciones = educService.getEducacionByPersonaId(personaId);
+            if (educaciones.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron educaciones para la Persona con ID: " + personaId);
+            }
+            return ResponseEntity.ok(educaciones);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener educaciones por ID de Persona: " + e.getMessage());
+        }
+    }
 }
