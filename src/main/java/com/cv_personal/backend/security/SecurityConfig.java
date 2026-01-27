@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Rutas Públicas de Lectura y Autenticación
-                        .requestMatchers("/login/**", "/usuario/save", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/login/**", "/usuario/save", "/v3/api-docs/**", "/swagger-ui/**", "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/persona/**",
                                 "/educacion/**",
