@@ -131,7 +131,7 @@ Implemented null and empty string checks for `nombre` and `version` fields from 
 Implemented null and empty string checks for `nombre_institucion`, `logo_imagen`, `fecha_inicio`, `fecha_fin`, `titulo`, and `url_titulo` fields from the incoming `Educacion` object within the `updateEducacion` controller method. This prevents `null` values from overwriting existing data when not provided in a PUT request.
 
 **Files Modified:**
-- `src/main/java/com/cv_personal.backend/controller/EducacionController.java`
+- `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
 
 ### Fixed partial update issue in `ContactoController.java`'s `updateContacto` method and added logo upload endpoint
 
@@ -243,10 +243,10 @@ Modified the `@GeneratedValue` strategy for `@Id` fields in several model entiti
 **Files Modified:**
 - `src/main/java/com.cv_personal.backend/model/Contacto.java`
 - `src/main/java/com.cv_personal.backend/model/Educacion.java`
-- `src/main/java/com/cv_personal.backend/model/Herramienta.java`
+- `src/main/java/com.cv_personal.backend/model/Herramienta.java`
 - `src/main/java/com/cv_personal.backend/model/Proyecto.java`
 - `src/main/java/com/cv_personal.backend/model/Residencia.java`
-- `src/main/java/com/cv_personal.backend/model/Rol.java`
+- `src/main/java/com.cv_personal.backend/model/Rol.java`
 
 ### Removed unused imports and variables
 
@@ -255,8 +255,8 @@ Removed unused imports and variables across several Java files to improve code c
 
 **Files Modified:**
 - `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
-- `src/main/java/com.cv_personal.backend/controller/PersonaController.java`
-- `src/main/java/com.cv_personal.backend/model/Persona.java`
+- `src/main/java/com/cv_personal.backend/controller/PersonaController.java`
+- `src/main/java/com/cv_personal.backend/model/Persona.java`
 - `src/main/java/com.cv_personal.backend/model/Usuario.java`
 - `src/main/java/com/cv_personal.backend/service/PersonaService.java`
 
@@ -273,11 +273,11 @@ This includes:
 - `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
 - `src/main/java/com/cv_personal.backend/controller/ProyectoController.java`
 - `src/main/java/com/cv_personal.backend/service/EducacionService.java`
-- `src/main/java/com/cv_personal.backend/service/IEducacionService.java`
+- `src/main/java/com.cv_personal.backend/service/IEducacionService.java`
 - `src/main/java/com.cv_personal.backend/service/IProyectoService.java`
-- `src/main/java/com.cv_personal.backend/service/ProyectoService.java`
-- `src/main/java/com/cv_personal.backend/dto/EducacionHerramientasDto.java` (new file)
-- `src/main/java/com/cv_personal.backend/dto/HerramientaRequestDto.java` (new file)
+- `src/main/java/com/cv_personal.backend/service/ProyectoService.java`
+- `src/main/java/com.cv_personal.backend/dto/EducacionHerramientasDto.java` (new file)
+- `src/main/java/com.cv_personal.backend/dto/HerramientaRequestDto.java` (new file)
 - `src/main/java/com/cv_personal.backend/dto/ProyectoHerramientasDto.java` (new file)
 
 ### Feature: Retrieve related entities by Persona ID
@@ -292,10 +292,10 @@ Implemented functionality to retrieve lists of associated entities (Educacion, R
 
 **Files Modified:**
 - `src/main/java/com.cv_personal.backend/service/IEducacionService.java`
-- `src/main/java/com/cv_personal.backend/service/EducacionService.java`
+- `src/main/java/com.cv_personal.backend/service/EducacionService.java`
 - `src/main/java/com.cv_personal.backend/repository/IEducacionRepository.java`
-- `src/main/java/com/cv_personal.backend/controller/EducacionController.java`
-- `src/main/java/com/cv_personal.backend/service/IResidenciaService.java`
+- `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
+- `src/main/java/com.cv_personal.backend/service/IResidenciaService.java`
 - `src/main/java/com.cv_personal.backend/service/ResidenciaService.java`
 - `src/main/java/com/cv_personal.backend/controller/ResidenciaController.java`
 - `src/main/java/com.cv_personal.backend/service/IProyectoService.java`
@@ -303,4 +303,25 @@ Implemented functionality to retrieve lists of associated entities (Educacion, R
 - `src/main/java/com.cv_personal.backend/controller/ProyectoController.java`
 - `src/main/java/com/cv_personal.backend/service/IContactoService.java`
 - `src/main/java/com.cv_personal.backend/service/ContactoService.java`
-- `src/main/java/com/cv_personal.backend/controller/ContactoController.java`
+- `src/main/java/com.cv_personal.backend/controller/ContactoController.java`
+### Feature: Enhance Herramienta model with new attributes and default logo logic, and dependency fixes
+
+**Description:**
+Implemented significant enhancements to the `Herramienta` management:
+- Added `descripcion` (String, nullable), `url` (String, nullable), and `logo` (String for path) fields to the `Herramienta` model, `HerramientaDto`, and `HerramientaMapper`.
+- Introduced file upload functionality for Herramienta logos, including a new `updateLogoImage` method in `IHerramientaService` and `HerramientaService`, and a `POST /{id}/logo` endpoint in `HerramientaController`.
+- Ensured a default logo path (`/uploads/default-tool-icon.png`) is automatically assigned if no custom logo is provided during creation or update. This also involved configuring the `uploads.directory` in `application.properties` and verifying `MvcConfig` for static resource serving.
+- Resolved `UnsatisfiedDependencyException` errors by fixing a duplicate class definition in `HerramientaService`.
+- Corrected method signature mismatches and dependency injection issues in `EducacionService` and `ProyectoService` where they interacted with `HerramientaService`, ensuring proper fetching of `Herramienta` entities.
+- Modified `HerramientaService.java` to store the logo path as `/uploads/unique-filename.ext` to ensure the full relative path is saved.
+
+**Files Modified:**
+- `src/main/java/com/cv_personal/backend/model/Herramienta.java`
+- `src/main/java/com/cv_personal/backend/dto/HerramientaDto.java`
+- `src/main/java/com/cv_personal/backend/mapper/HerramientaMapper.java`
+- `src/main/java/com/cv_personal/backend/service/IHerramientaService.java`
+- `src/main/java/com/cv_personal/backend/service/HerramientaService.java`
+- `src/main/java/com/cv_personal/backend/controller/HerramientaController.java`
+- `src/main/java/com/cv_personal/backend/service/EducacionService.java`
+- `src/main/java/com/cv_personal/backend/service/ProyectoService.java`
+- `src/main/resources/application.properties`
