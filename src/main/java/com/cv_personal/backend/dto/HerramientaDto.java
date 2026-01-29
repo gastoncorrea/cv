@@ -13,6 +13,9 @@ public class HerramientaDto {
     private Long id_herramienta;
     private String nombre;
     private String version;
+    private String descripcion;
+    private String url;
+    private String logo;
     
     
     

@@ -17,8 +17,10 @@ public interface IHerramientaService {
     
     public HerramientaDto findHerramienta(Long id);
     
-    public Herramienta updateHerramienta(Long id);
+    public Herramienta updateHerramienta(Long id, HerramientaDto herramientaDto);
     
     public void deleteHerramienta(Long id);
+    
+    public HerramientaDto updateLogoImage(Long id, org.springframework.web.multipart.MultipartFile file);
     
 }

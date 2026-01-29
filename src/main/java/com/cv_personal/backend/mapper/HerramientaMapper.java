@@ -18,6 +18,9 @@ public class HerramientaMapper {
             herramientaDto.setId_herramienta(herramienta.getId_herramienta());
             herramientaDto.setNombre(herramienta.getNombre());
             herramientaDto.setVersion(herramienta.getVersion());
+            herramientaDto.setDescripcion(herramienta.getDescripcion());
+            herramientaDto.setUrl(herramienta.getUrl());
+            herramientaDto.setLogo(herramienta.getLogo());
             
             
             return herramientaDto;

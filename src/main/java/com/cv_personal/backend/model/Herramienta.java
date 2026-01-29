@@ -30,6 +30,12 @@ public class Herramienta {
     private String nombre;
     @Column(length = 45)
     private String version;
+    @Column(length = 255)
+    private String descripcion;
+    @Column(length = 255)
+    private String url;
+    @Column(name = "logo")
+    private String logo;
     
     @ManyToMany
     @JoinTable(

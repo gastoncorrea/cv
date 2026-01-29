@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/herramienta")
@@ -58,6 +60,9 @@ public class HerramientaController {
     public ResponseEntity<?> findHerramienta(@PathVariable Long id){
         try{
             HerramientaDto herramienta = herrService.findHerramienta(id);
+            if (herramienta == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Herramienta no encontrada con ID: " + id));
+            }
             return ResponseEntity.ok(herramienta);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -70,38 +75,40 @@ public class HerramientaController {
     public ResponseEntity<?> deleteHerramienta(@PathVariable Long id){
         try{
             herrService.deleteHerramienta(id);
-            return ResponseEntity.ok("Herramienta eliminada con exito");
-        }catch(Exception e){
+            return ResponseEntity.ok(Map.of("message", "Herramienta eliminada con exito"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error interno en el servidor al intentar eliminar el registro");
+                    .body(Map.of("error","Error interno en el servidor al intentar eliminar el registro"));
         }
     
     }
     
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateHerramienta(@PathVariable Long id,
-                                                @RequestBody Herramienta herramienta){
-    
+                                                @RequestBody HerramientaDto herramientaDto){
         try{
-            Herramienta findHerramienta = herrService.updateHerramienta(id);
-            if(findHerramienta != null){
-                if(herramienta.getNombre() != null && !herramienta.getNombre().trim().isEmpty()){
-                    findHerramienta.setNombre(herramienta.getNombre());
-                }
-                if(herramienta.getVersion() != null && !herramienta.getVersion().trim().isEmpty()){
-                    findHerramienta.setVersion(herramienta.getVersion());
-                }
-                
-                HerramientaDto herramientaSave = herrService.saveHerramienta(findHerramienta);
-                
-                return ResponseEntity.ok(herramientaSave);
-            }else{
-                return ResponseEntity.badRequest().body("El registro con ese id no existe");
-            }
+            Herramienta updatedHerramienta = herrService.updateHerramienta(id, herramientaDto);
+            return ResponseEntity.ok(herrService.findHerramienta(updatedHerramienta.getId_herramienta()));
+        }catch(RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error en el servidor el intentar modificar el registro");
+                    .body(Map.of("error","Error interno en el servidor al intentar modificar el registro: " + e.getMessage()));
         }
     }
     
+    @PostMapping("/{id}/logo")
+    public ResponseEntity<?> uploadHerramientaLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            HerramientaDto updatedHerramienta = herrService.updateLogoImage(id, file);
+            return ResponseEntity.ok(updatedHerramienta);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error al cargar el logo: " + e.getMessage()));
+        }
+    }
 }
+

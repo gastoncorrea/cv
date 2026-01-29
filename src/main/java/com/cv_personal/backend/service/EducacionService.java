@@ -12,6 +12,7 @@ import com.cv_personal.backend.model.Educacion;
 import com.cv_personal.backend.model.Herramienta;
 import com.cv_personal.backend.model.Persona; // Import Persona
 import com.cv_personal.backend.repository.IEducacionRepository;
+import com.cv_personal.backend.repository.IHerramientaRepository;
 import com.cv_personal.backend.repository.IPersonaRepository; // Import IPersonaRepository
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,10 @@ public class EducacionService implements IEducacionService{
 
     @Autowired
     private IPersonaRepository personaRepository; // Inject IPersonaRepository    
+    
+    @Autowired
+    private IHerramientaRepository herramientaRepository;
+    
     @Override
     public EducacionDto saveEducacion(Educacion educacion) {
         Educacion educacionSave = educRepository.save(educacion);
@@ -81,11 +86,9 @@ public class EducacionService implements IEducacionService{
         for (HerramientaRequestDto herramientaDto : dto.getHerramientas()) {
             Herramienta herramienta;
             if (herramientaDto.getId() != null) {
-                // Herramienta already exists, fetch it
-                herramienta = herramientaService.updateHerramienta(herramientaDto.getId()); // updateHerramienta returns the model
-                if (herramienta == null) {
-                    throw new RuntimeException("Herramienta not found with ID: " + herramientaDto.getId());
-                }
+                // Herramienta already exists, fetch it from repository
+                herramienta = herramientaRepository.findById(herramientaDto.getId())
+                        .orElseThrow(() -> new RuntimeException("Herramienta not found with ID: " + herramientaDto.getId()));
             } else {
                 // Herramienta does not exist, create it
                 herramienta = new Herramienta();
@@ -97,10 +100,6 @@ public class EducacionService implements IEducacionService{
             // Establish ManyToMany relationship
             educacion.getHerramientas().add(herramienta);
             herramienta.getEstudios().add(educacion); // Maintain bidirectional consistency
-
-            // Note: Saving individual entities here might not be strictly necessary if Educacion is saved at the end
-            // but explicitly saving the owning side (Herramienta) ensures the join table is updated.
-            // Also, educacion.getHerramientas().add(herramienta) will track the change within the transaction.
         }
         
         // Save the updated Educacion which will cascade the relationship changes if properly configured

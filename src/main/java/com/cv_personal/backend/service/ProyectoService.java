@@ -13,6 +13,7 @@ import com.cv_personal.backend.model.Persona; // Import Persona
 import com.cv_personal.backend.model.Proyecto;
 import com.cv_personal.backend.repository.IPersonaRepository; // Import IPersonaRepository
 import com.cv_personal.backend.repository.IProyectoRepository;
+import com.cv_personal.backend.repository.IHerramientaRepository; // Import IHerramientaRepository
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class ProyectoService implements IProyectoService{
     @Autowired
     private IHerramientaService herramientaService; // Inject IHerramientaService
     
+    @Autowired
+    private IHerramientaRepository herramientaRepository; // Inject IHerramientaRepository
+
     @Override
     public ProyectoDto saveProyecto(Proyecto proyecto) {
         Proyecto proyectoSave = proRepo.save(proyecto);
@@ -76,11 +80,9 @@ public class ProyectoService implements IProyectoService{
         for (HerramientaRequestDto herramientaDto : dto.getHerramientas()) {
             Herramienta herramienta;
             if (herramientaDto.getId() != null) {
-                // Herramienta already exists, fetch it
-                herramienta = herramientaService.updateHerramienta(herramientaDto.getId()); // updateHerramienta returns the model
-                if (herramienta == null) {
-                    throw new RuntimeException("Herramienta not found with ID: " + herramientaDto.getId());
-                }
+                // Herramienta already exists, fetch it from repository
+                herramienta = herramientaRepository.findById(herramientaDto.getId())
+                        .orElseThrow(() -> new RuntimeException("Herramienta not found with ID: " + herramientaDto.getId()));
             } else {
                 // Herramienta does not exist, create it
                 herramienta = new Herramienta();
