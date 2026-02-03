@@ -6,7 +6,7 @@ package com.cv_personal.backend.controller;
 
 import com.cv_personal.backend.dto.EducacionDto;
 import com.cv_personal.backend.model.Educacion;
-import com.cv_personal.backend.dto.EducacionHerramientasDto; // Import DTO
+import com.cv_personal.backend.dto.EducacionHerramientasDto;
 import com.cv_personal.backend.service.IEducacionService;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/educacion")
@@ -59,6 +62,9 @@ public class EducacionController {
     public ResponseEntity<?> findEducacion(@PathVariable Long id){
         try{
             EducacionDto educacion = educService.findEducacion(id);
+            if (educacion == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Educacion no encontrada con ID: " + id));
+            }
             return ResponseEntity.ok(educacion);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -72,6 +78,8 @@ public class EducacionController {
         try{
             educService.deleteEducacion(id);
             return ResponseEntity.ok("Educacion eliminada con exito");
+        }catch(RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno en el servidor al intentar eliminar el registro");
@@ -89,9 +97,7 @@ public class EducacionController {
                 if(educacion.getNombre_institucion() != null && !educacion.getNombre_institucion().trim().isEmpty()){
                     findEducacion.setNombre_institucion(educacion.getNombre_institucion());
                 }
-                if(educacion.getLogo_imagen() != null && !educacion.getLogo_imagen().trim().isEmpty()){
-                    findEducacion.setLogo_imagen(educacion.getLogo_imagen());
-                }
+                // Removed logo_imagen handling from here
                 if(educacion.getFecha_inicio() != null){ // LocalDate can be null
                     findEducacion.setFecha_inicio(educacion.getFecha_inicio());
                 }
@@ -114,6 +120,19 @@ public class EducacionController {
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error en el servidor el intentar modificar el registro");
+        }
+    }
+
+    @PostMapping("/{id}/logo")
+    public ResponseEntity<?> uploadEducacionLogo(@PathVariable Long id,
+                                                @RequestParam("file") MultipartFile file) {
+        try {
+            EducacionDto updatedEducacion = educService.updateLogoImage(id, file);
+            return ResponseEntity.ok(updatedEducacion);
+        } catch (RuntimeException e) { // Catch specific RuntimeException for not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) { // Catch general Exception for other unexpected errors
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error al subir la imagen del logo: " + e.getMessage()));
         }
     }
 
@@ -142,3 +161,4 @@ public class EducacionController {
         }
     }
 }
+

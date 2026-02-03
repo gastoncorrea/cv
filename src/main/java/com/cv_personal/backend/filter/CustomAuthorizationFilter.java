@@ -45,12 +45,16 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     JWTVerifier verifier = JWT.require(algorithm).build();
                     DecodedJWT decodedJWT = verifier.verify(token);
                     String username = decodedJWT.getSubject();
-                    String[] roles = decodedJWT.getClaim("Rol").asArray(String.class); // "Rol" with capital 'R'
+                    String[] roles = decodedJWT.getClaim("roles").asArray(String.class); // "roles" with lowercase 'r'
+                    Long personId = decodedJWT.getClaim("personId").asLong(); // Extract personId
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                     stream(roles).forEach(role -> {
                         authorities.add(new SimpleGrantedAuthority(role));
                     });
+                    
+                    // Create an authentication token and set the personId as a detail
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    authenticationToken.setDetails(personId); // Set personId as detail
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 } catch (Exception exception) {

@@ -7,23 +7,29 @@ package com.cv_personal.backend.service;
 import com.cv_personal.backend.dto.ContactoDto;
 import com.cv_personal.backend.mapper.ContactoMapper;
 import com.cv_personal.backend.model.Contacto;
-import com.cv_personal.backend.model.Persona; // Import Persona
+import com.cv_personal.backend.model.Persona;
 import com.cv_personal.backend.repository.IContactoRepository;
-import com.cv_personal.backend.repository.IPersonaRepository; // Import IPersonaRepository
+import com.cv_personal.backend.repository.IPersonaRepository;
+import com.cv_personal.backend.util.FileUploadUtil; // Import FileUploadUtil
+import jakarta.annotation.PostConstruct;
+import java.io.IOException; // Import IOException
+import java.nio.file.Files; // Import Files
+import java.nio.file.Path; // Import Path
+import java.nio.file.Paths; // Import Paths
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value; // Import Value
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
-import jakarta.annotation.PostConstruct;
-import org.springframework.transaction.annotation.Transactional; // Import Transactional
+
 @Service
 public class ContactoService implements IContactoService{
+    
+    private static final Logger logger = LoggerFactory.getLogger(ContactoService.class);
     
     @Autowired
     private IContactoRepository contacRep;
@@ -31,14 +37,23 @@ public class ContactoService implements IContactoService{
     @Autowired
     private ContactoMapper contacMap;
     
-    private final Path root = Paths.get("uploads");
+    @Autowired
+    private IPersonaRepository personaRepository;
 
+    @Value("${uploads.directory}")
+    private String uploadDir;
+    
     @PostConstruct
     public void init() {
         try {
-            Files.createDirectories(root);
-        } catch (java.io.IOException e) {
-            throw new RuntimeException("No se pudo inicializar la carpeta para las subidas de archivos.", e);
+            Path path = Paths.get(uploadDir);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+                logger.info("Created uploads directory: {}", uploadDir);
+            }
+        } catch (IOException e) {
+            logger.error("Could not create uploads directory: {}", uploadDir, e);
+            throw new RuntimeException("Could not create uploads directory", e);
         }
     }
     
@@ -77,37 +92,53 @@ public class ContactoService implements IContactoService{
 
     @Override
     public void deleteContacto(Long id) {
+        Contacto contacto = contacRep.findById(id)
+                                    .orElseThrow(() -> new RuntimeException("Contacto no encontrado con ID: " + id));
+        
+        if (contacto.getLogo_img() != null && !contacto.getLogo_img().isEmpty()) {
+            try {
+                FileUploadUtil.deleteFile(contacto.getLogo_img());
+                logger.info("Deleted old logo image: {}", contacto.getLogo_img());
+            } catch (IOException e) {
+                logger.warn("Could not delete old logo image {}: {}", contacto.getLogo_img(), e.getMessage());
+            }
+        }
         contacRep.deleteById(id);
     }
     
     @Override
+    @Transactional
     public ContactoDto updateLogoImage(Long id, MultipartFile file) {
-        try {
-            if (file.isEmpty()) {
-                throw new RuntimeException("Falló al guardar un archivo vacío.");
+        Contacto contacto = contacRep.findById(id)
+                                    .orElseThrow(() -> new RuntimeException("Contacto no encontrado con ID: " + id));
+
+        // Delete old image if it exists
+        if (contacto.getLogo_img() != null && !contacto.getLogo_img().isEmpty()) {
+            try {
+                FileUploadUtil.deleteFile(contacto.getLogo_img());
+                logger.info("Deleted old logo image: {}", contacto.getLogo_img());
+            } catch (IOException e) {
+                logger.warn("Could not delete old logo image {}: {}", contacto.getLogo_img(), e.getMessage());
             }
-            
-            Contacto contacto = contacRep.findById(id).orElseThrow(() -> new RuntimeException("Contacto no encontrado con id: " + id));
-
-            String originalFilename = file.getOriginalFilename();
-            String uniqueFilename = UUID.randomUUID().toString() + "_" + originalFilename;
-
-            Path destinationFile = this.root.resolve(uniqueFilename).normalize().toAbsolutePath();
-            Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
-
-            String fileUrl = "/uploads/" + uniqueFilename;
-            contacto.setLogo_img(fileUrl);
-            
-            Contacto updatedContacto = contacRep.save(contacto);
-            return contacMap.toDto(updatedContacto);
-
-        } catch (java.io.IOException e) {
-            throw new RuntimeException("Falló al guardar el archivo.", e);
         }
-    }
 
-    @Autowired
-    private IPersonaRepository personaRepository; // Inject IPersonaRepository
+        if (file != null && !file.isEmpty()) {
+            try {
+                String newLogoPath = FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
+                contacto.setLogo_img(newLogoPath);
+                logger.info("Updated logo image for Contacto ID {}: {}", id, newLogoPath);
+            } catch (IOException e) {
+                logger.error("Could not save logo image for Contacto ID {}: {}", id, e.getMessage());
+                throw new RuntimeException("Could not save logo image", e);
+            }
+        } else {
+            contacto.setLogo_img(null);
+            logger.info("Set logo image to null for Contacto ID {} as no file was provided.", id);
+        }
+
+        Contacto updatedContacto = contacRep.save(contacto);
+        return contacMap.toDto(updatedContacto);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -116,7 +147,7 @@ public class ContactoService implements IContactoService{
                                 .orElseThrow(() -> new RuntimeException("Persona not found with ID: " + personaId));
         
         List<ContactoDto> listContactoDto = new ArrayList<>();
-        for (Contacto contacto : persona.getContacto()) { // Access contacto directly
+        for (Contacto contacto : persona.getContacto()) {
             listContactoDto.add(contacMap.toDto(contacto));
         }
         return listContactoDto;

@@ -6,6 +6,7 @@ package com.cv_personal.backend.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.cv_personal.backend.security.CustomUserDetails; // Import CustomUserDetails
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,7 +24,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
@@ -48,30 +48,31 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        User user = (User) authentication.getPrincipal();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal(); // Cast to CustomUserDetails
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        
         String access_token = JWT.create()
-                .withSubject(user.getUsername())
+                .withSubject(customUserDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 10*60*1000))
                 .withIssuer(request.getRequestURL().toString())
-                .withClaim("Rol", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                        .sign(algorithm);
+                .withClaim("roles", customUserDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .withClaim("personId", customUserDetails.getPersonId()) // Add personId claim
+                .sign(algorithm);
+        
         String refresh_token = JWT.create()
-                .withSubject(user.getUsername())
+                .withSubject(customUserDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 30*60*1000))
                 .withIssuer(request.getRequestURL().toString())
-                .withClaim("Rol", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                        .sign(algorithm);
-        /*response.setHeader("access_token", access_token);
-        response.setHeader("refresh_token", refresh_token);*/
-        Map<String, String> tokens = new HashMap<>();
+                .withClaim("roles", customUserDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .withClaim("personId", customUserDetails.getPersonId()) // Add personId claim
+                .sign(algorithm);
+        
+        Map<String, Object> tokens = new HashMap<>(); // Change to Object to allow Long
         tokens.put("access_token", access_token);
         tokens.put("refresh_token", refresh_token);
+        tokens.put("personId", customUserDetails.getPersonId()); // Include personId in response
+        
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
-    
-    
-    
-    
 }

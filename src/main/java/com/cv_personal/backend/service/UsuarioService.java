@@ -10,6 +10,7 @@ import com.cv_personal.backend.model.Rol;
 import com.cv_personal.backend.model.Usuario;
 import com.cv_personal.backend.repository.IRolRepository;
 import com.cv_personal.backend.repository.IUsuarioRepository;
+import com.cv_personal.backend.security.CustomUserDetails; // Import CustomUserDetails
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +46,13 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(rol.getNombre()));
         });
         
-        return new org.springframework.security.core.userdetails.User(usuario.getEmail(), usuario.getPassword(), authorities);
+        // Retrieve personId from the associated Persona
+        Long personId = null;
+        if (usuario.getPersona() != null) {
+            personId = usuario.getPersona().getId_persona();
+        }
+        
+        return new CustomUserDetails(usuario.getEmail(), usuario.getPassword(), authorities, personId);
     }
     
     @Override

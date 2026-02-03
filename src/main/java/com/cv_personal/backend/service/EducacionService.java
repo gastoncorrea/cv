@@ -10,20 +10,31 @@ import com.cv_personal.backend.dto.HerramientaRequestDto;
 import com.cv_personal.backend.mapper.EducacionMapper;
 import com.cv_personal.backend.model.Educacion;
 import com.cv_personal.backend.model.Herramienta;
-import com.cv_personal.backend.model.Persona; // Import Persona
+import com.cv_personal.backend.model.Persona;
 import com.cv_personal.backend.repository.IEducacionRepository;
 import com.cv_personal.backend.repository.IHerramientaRepository;
-import com.cv_personal.backend.repository.IPersonaRepository; // Import IPersonaRepository
+import com.cv_personal.backend.repository.IPersonaRepository;
+import com.cv_personal.backend.util.FileUploadUtil; // Import FileUploadUtil
+import jakarta.annotation.PostConstruct; // Import PostConstruct
+import java.io.IOException; // Import IOException
+import java.nio.file.Files; // Import Files
+import java.nio.file.Path; // Import Path
+import java.nio.file.Paths; // Import Paths
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value; // Import Value
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.multipart.MultipartFile; // Import MultipartFile
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Service
 public class EducacionService implements IEducacionService{
+    
+    private static final Logger logger = LoggerFactory.getLogger(EducacionService.class);
     
     @Autowired
     private IEducacionRepository educRepository;
@@ -32,13 +43,30 @@ public class EducacionService implements IEducacionService{
     private EducacionMapper educMap;
 
     @Autowired
-    private IHerramientaService herramientaService; // Inject IHerramientaService
+    private IHerramientaService herramientaService;
 
     @Autowired
-    private IPersonaRepository personaRepository; // Inject IPersonaRepository    
+    private IPersonaRepository personaRepository;    
     
     @Autowired
     private IHerramientaRepository herramientaRepository;
+
+    @Value("${uploads.directory}")
+    private String uploadDir;
+    
+    @PostConstruct
+    public void init() {
+        try {
+            Path path = Paths.get(uploadDir);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+                logger.info("Created uploads directory: {}", uploadDir);
+            }
+        } catch (IOException e) {
+            logger.error("Could not create uploads directory: {}", uploadDir, e);
+            throw new RuntimeException("Could not create uploads directory", e);
+        }
+    }
     
     @Override
     public EducacionDto saveEducacion(Educacion educacion) {
@@ -68,6 +96,17 @@ public class EducacionService implements IEducacionService{
 
     @Override
     public void deleteEducacion(Long id) {
+        Educacion educacion = educRepository.findById(id)
+                                    .orElseThrow(() -> new RuntimeException("Educacion not found with ID: " + id));
+        
+        if (educacion.getLogo_imagen() != null && !educacion.getLogo_imagen().isEmpty()) {
+            try {
+                FileUploadUtil.deleteFile(educacion.getLogo_imagen());
+                logger.info("Deleted old logo image: {}", educacion.getLogo_imagen());
+            } catch (IOException e) {
+                logger.warn("Could not delete old logo image {}: {}", educacion.getLogo_imagen(), e.getMessage());
+            }
+        }
         educRepository.deleteById(id);
     }
 
@@ -108,15 +147,50 @@ public class EducacionService implements IEducacionService{
     }
 
     @Override
-    @Transactional(readOnly = true) // Add Transactional and readOnly for fetching
+    @Transactional(readOnly = true)
     public List<EducacionDto> getEducacionByPersonaId(Long personaId) {
         Persona persona = personaRepository.findById(personaId)
                                 .orElseThrow(() -> new RuntimeException("Persona not found with ID: " + personaId));
         
         List<EducacionDto> listEducacionDto = new ArrayList<>();
-        for (Educacion educacion : persona.getEstudios()) { // Access estudios directly
+        for (Educacion educacion : persona.getEstudios()) {
             listEducacionDto.add(educMap.toDto(educacion));
         }
         return listEducacionDto;
     }
+    
+    @Override
+    @Transactional
+    public EducacionDto updateLogoImage(Long id, MultipartFile file) {
+        Educacion educacion = educRepository.findById(id)
+                                    .orElseThrow(() -> new RuntimeException("Educacion not found with ID: " + id));
+
+        // Delete old image if it exists
+        if (educacion.getLogo_imagen() != null && !educacion.getLogo_imagen().isEmpty()) {
+            try {
+                FileUploadUtil.deleteFile(educacion.getLogo_imagen());
+                logger.info("Deleted old logo image: {}", educacion.getLogo_imagen());
+            } catch (IOException e) {
+                logger.warn("Could not delete old logo image {}: {}", educacion.getLogo_imagen(), e.getMessage());
+            }
+        }
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                String newLogoPath = FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
+                educacion.setLogo_imagen(newLogoPath);
+                logger.info("Updated logo image for Educacion ID {}: {}", id, newLogoPath);
+            } catch (IOException e) {
+                logger.error("Could not save logo image for Educacion ID {}: {}", id, e.getMessage());
+                throw new RuntimeException("Could not save logo image", e);
+            }
+        } else {
+            educacion.setLogo_imagen(null);
+            logger.info("Set logo image to null for Educacion ID {} as no file was provided.", id);
+        }
+
+        Educacion updatedEducacion = educRepository.save(educacion);
+        return educMap.toDto(updatedEducacion);
+    }
 }
+

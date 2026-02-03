@@ -8,14 +8,13 @@ import com.cv_personal.backend.dto.HerramientaDto;
 import com.cv_personal.backend.mapper.HerramientaMapper;
 import com.cv_personal.backend.model.Herramienta;
 import com.cv_personal.backend.repository.IHerramientaRepository;
-import java.io.File;
-import java.io.IOException;
+import com.cv_personal.backend.util.FileUploadUtil; // Import FileUploadUtil
+import java.io.IOException; // Import IOException
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +40,14 @@ public class HerramientaService implements IHerramientaService {
     @PostConstruct
     public void init() {
         try {
-            logger.info("uploadsDir configurado a: {}", uploadsDir); // Log the value for debugging
-            Files.createDirectories(Paths.get(uploadsDir));
-            logger.info("Directorio de carga de logos inicializado en: {}", uploadsDir);
+            Path path = Paths.get(uploadsDir);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+                logger.info("Created uploads directory: {}", uploadsDir);
+            }
         } catch (IOException e) {
-            logger.error("No se pudo crear el directorio de carga de logos: {}", uploadsDir, e);
-            throw new RuntimeException("No se pudo inicializar el directorio de carga", e);
+            logger.error("Could not create uploads directory: {}", uploadsDir, e);
+            throw new RuntimeException("Could not create uploads directory", e);
         }
     }
     
@@ -73,16 +74,23 @@ public class HerramientaService implements IHerramientaService {
         Herramienta herramienta = herramientaRepo.findById(id).orElse(null);
         if (herramienta == null) {
             logger.warn("Herramienta con ID {} no encontrada.", id);
-            return null; // Or throw a specific exception
+            return null;
         }
         return herrMapper.toDto(herramienta);
     }
 
     @Override
     public void deleteHerramienta(Long id) {
-        if (!herramientaRepo.existsById(id)) {
-            logger.warn("Intento de eliminar Herramienta con ID {} que no existe.", id);
-            throw new RuntimeException("Herramienta no encontrada con ID: " + id);
+        Herramienta herramienta = herramientaRepo.findById(id)
+                                    .orElseThrow(() -> new RuntimeException("Herramienta no encontrada con ID: " + id));
+        
+        if (herramienta.getLogo() != null && !herramienta.getLogo().isEmpty()) {
+            try {
+                FileUploadUtil.deleteFile(herramienta.getLogo());
+                logger.info("Deleted old logo image: {}", herramienta.getLogo());
+            } catch (IOException e) {
+                logger.warn("Could not delete old logo image {}: {}", herramienta.getLogo(), e.getMessage());
+            }
         }
         herramientaRepo.deleteById(id);
         logger.info("Herramienta con ID {} eliminada con éxito.", id);
@@ -105,9 +113,10 @@ public class HerramientaService implements IHerramientaService {
         if (herramientaDto.getUrl() != null && !herramientaDto.getUrl().isEmpty()) {
             herramienta.setUrl(herramientaDto.getUrl());
         }
-        if (herramientaDto.getLogo() != null && !herramientaDto.getLogo().isEmpty()) {
-            herramienta.setLogo(herramientaDto.getLogo());
-        }
+        // Logo is handled by updateLogoImage method
+        // if (herramientaDto.getLogo() != null && !herramientaDto.getLogo().isEmpty()) {
+        //     herramienta.setLogo(herramientaDto.getLogo());
+        // }
 
         Herramienta updatedHerramienta = herramientaRepo.save(herramienta);
         logger.info("Herramienta con ID {} actualizada con éxito.", id);
@@ -119,27 +128,31 @@ public class HerramientaService implements IHerramientaService {
         Herramienta herramienta = herramientaRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Herramienta no encontrada con ID: " + id));
 
-        if (file.isEmpty()) {
-            throw new RuntimeException("No se ha seleccionado ningún archivo para cargar.");
-        }
-
-        try {
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        // Delete old image if it exists
+        if (herramienta.getLogo() != null && !herramienta.getLogo().isEmpty()) {
+            try {
+                FileUploadUtil.deleteFile(herramienta.getLogo());
+                logger.info("Deleted old logo image: {}", herramienta.getLogo());
+            } catch (IOException e) {
+                logger.warn("Could not delete old logo image {}: {}", herramienta.getLogo(), e.getMessage());
             }
-            String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
-            Path filePath = Paths.get(uploadsDir + File.separator + uniqueFilename);
-            Files.copy(file.getInputStream(), filePath);
-
-            herramienta.setLogo("/uploads/" + uniqueFilename); // Store the relative path including /uploads/
-            herramientaRepo.save(herramienta);
-            logger.info("Logo para Herramienta con ID {} cargado y actualizado con éxito: {}", id, uniqueFilename);
-            return herrMapper.toDto(herramienta);
-        } catch (IOException e) {
-            logger.error("Error al cargar el logo para la Herramienta con ID {}: {}", id, e.getMessage(), e);
-            throw new RuntimeException("Error al cargar el archivo: " + e.getMessage());
         }
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                String newLogoPath = FileUploadUtil.saveFile(uploadsDir, file.getOriginalFilename(), file);
+                herramienta.setLogo(newLogoPath);
+                logger.info("Updated logo image for Herramienta ID {}: {}", id, newLogoPath);
+            } catch (IOException e) {
+                logger.error("Could not save logo image for Herramienta ID {}: {}", id, e.getMessage());
+                throw new RuntimeException("Could not save logo image", e);
+            }
+        } else {
+            herramienta.setLogo(null);
+            logger.info("Set logo image to null for Herramienta ID {} as no file was provided.", id);
+        }
+
+        herramientaRepo.save(herramienta);
+        return herrMapper.toDto(herramienta);
     }
 }

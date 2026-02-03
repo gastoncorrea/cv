@@ -7,6 +7,7 @@ package com.cv_personal.backend.controller;
 import com.cv_personal.backend.dto.HerramientaDto;
 import com.cv_personal.backend.model.Herramienta;
 import com.cv_personal.backend.service.IHerramientaService;
+import java.io.IOException; // Import IOException
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,9 +105,9 @@ public class HerramientaController {
         try {
             HerramientaDto updatedHerramienta = herrService.updateLogoImage(id, file);
             return ResponseEntity.ok(updatedHerramienta);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
+        } catch (RuntimeException e) { // Catch specific RuntimeException for not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) { // Catch general Exception for other unexpected errors
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error al cargar el logo: " + e.getMessage()));
         }
     }

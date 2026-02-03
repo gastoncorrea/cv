@@ -7,6 +7,7 @@ package com.cv_personal.backend.controller;
 import com.cv_personal.backend.dto.ContactoDto;
 import com.cv_personal.backend.model.Contacto;
 import com.cv_personal.backend.service.IContactoService;
+import java.io.IOException; // Import IOException
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.web.bind.annotation.RequestParam;
-
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -99,7 +98,9 @@ public class ContactoController {
         try{
 
             ContactoDto contacto = contacService.findContacto(id);
-
+            if (contacto == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Contacto no encontrado con ID: " + id));
+            }
             return ResponseEntity.ok(contacto);
 
         }catch(Exception e){
@@ -126,6 +127,8 @@ public class ContactoController {
 
             return ResponseEntity.ok("Contacto eliminado con exito");
 
+        }catch(RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }catch(Exception e){
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -202,10 +205,10 @@ public class ContactoController {
 
             return ResponseEntity.ok(updatedContacto);
 
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al subir el logo: " + e.getMessage());
-
+        } catch (RuntimeException e) { // Catch specific RuntimeException for not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) { // Catch general Exception for other unexpected errors
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error al subir el logo: " + e.getMessage()));
         }
 
     }
