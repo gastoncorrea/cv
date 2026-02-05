@@ -40,6 +40,9 @@ public class ContactoService implements IContactoService{
     @Autowired
     private IPersonaRepository personaRepository;
 
+    @Autowired
+    private FileUploadUtil fileUploadUtil;
+
     @Value("${uploads.directory}")
     private String uploadDir;
     
@@ -97,7 +100,7 @@ public class ContactoService implements IContactoService{
         
         if (contacto.getLogo_img() != null && !contacto.getLogo_img().isEmpty()) {
             try {
-                FileUploadUtil.deleteFile(contacto.getLogo_img());
+                fileUploadUtil.deleteFile(uploadDir, contacto.getLogo_img());
                 logger.info("Deleted old logo image: {}", contacto.getLogo_img());
             } catch (IOException e) {
                 logger.warn("Could not delete old logo image {}: {}", contacto.getLogo_img(), e.getMessage());
@@ -115,7 +118,7 @@ public class ContactoService implements IContactoService{
         // Delete old image if it exists
         if (contacto.getLogo_img() != null && !contacto.getLogo_img().isEmpty()) {
             try {
-                FileUploadUtil.deleteFile(contacto.getLogo_img());
+                fileUploadUtil.deleteFile(uploadDir, contacto.getLogo_img());
                 logger.info("Deleted old logo image: {}", contacto.getLogo_img());
             } catch (IOException e) {
                 logger.warn("Could not delete old logo image {}: {}", contacto.getLogo_img(), e.getMessage());
@@ -124,7 +127,7 @@ public class ContactoService implements IContactoService{
 
         if (file != null && !file.isEmpty()) {
             try {
-                String newLogoPath = FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
+                String newLogoPath = fileUploadUtil.saveFile(uploadDir, file);
                 contacto.setLogo_img(newLogoPath);
                 logger.info("Updated logo image for Contacto ID {}: {}", id, newLogoPath);
             } catch (IOException e) {

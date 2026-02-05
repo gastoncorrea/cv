@@ -36,6 +36,9 @@ public class HerramientaService implements IHerramientaService {
     
     @Autowired
     private HerramientaMapper herrMapper;
+
+    @Autowired
+    private FileUploadUtil fileUploadUtil;
     
     @PostConstruct
     public void init() {
@@ -86,7 +89,7 @@ public class HerramientaService implements IHerramientaService {
         
         if (herramienta.getLogo() != null && !herramienta.getLogo().isEmpty()) {
             try {
-                FileUploadUtil.deleteFile(herramienta.getLogo());
+                fileUploadUtil.deleteFile(uploadsDir, herramienta.getLogo());
                 logger.info("Deleted old logo image: {}", herramienta.getLogo());
             } catch (IOException e) {
                 logger.warn("Could not delete old logo image {}: {}", herramienta.getLogo(), e.getMessage());
@@ -131,7 +134,7 @@ public class HerramientaService implements IHerramientaService {
         // Delete old image if it exists
         if (herramienta.getLogo() != null && !herramienta.getLogo().isEmpty()) {
             try {
-                FileUploadUtil.deleteFile(herramienta.getLogo());
+                fileUploadUtil.deleteFile(uploadsDir, herramienta.getLogo());
                 logger.info("Deleted old logo image: {}", herramienta.getLogo());
             } catch (IOException e) {
                 logger.warn("Could not delete old logo image {}: {}", herramienta.getLogo(), e.getMessage());
@@ -140,7 +143,7 @@ public class HerramientaService implements IHerramientaService {
 
         if (file != null && !file.isEmpty()) {
             try {
-                String newLogoPath = FileUploadUtil.saveFile(uploadsDir, file.getOriginalFilename(), file);
+                String newLogoPath = fileUploadUtil.saveFile(uploadsDir, file);
                 herramienta.setLogo(newLogoPath);
                 logger.info("Updated logo image for Herramienta ID {}: {}", id, newLogoPath);
             } catch (IOException e) {

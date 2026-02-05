@@ -30,6 +30,7 @@ public class ProyectoMapper {
         proyectoDto.setInicio(proyecto.getInicio());
         proyectoDto.setFin(proyecto.getFin());
         proyectoDto.setUrl(proyecto.getUrl());
+        proyectoDto.setLogo_proyecto(proyecto.getLogo_proyecto());
         proyectoDto.setHerramientas(setHerramientaDto(proyecto.getHerramientas()));
         
         return proyectoDto;

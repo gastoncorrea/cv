@@ -38,6 +38,8 @@ public class Proyecto {
     @Column(nullable = false)
     private LocalDate inicio;
     private LocalDate fin;
+    @Column(length = 255)
+    private String logo_proyecto;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_persona", nullable = false)

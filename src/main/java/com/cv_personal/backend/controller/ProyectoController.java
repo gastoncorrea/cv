@@ -6,7 +6,7 @@ package com.cv_personal.backend.controller;
 
 import com.cv_personal.backend.dto.ProyectoDto;
 import com.cv_personal.backend.model.Proyecto;
-import com.cv_personal.backend.dto.ProyectoHerramientasDto; // Import DTO
+import com.cv_personal.backend.dto.ProyectoHerramientasDto;
 import com.cv_personal.backend.service.IProyectoService;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
 
 @RestController
 @RequestMapping("/proyecto")
@@ -40,7 +43,7 @@ public class ProyectoController {
                     .body(Map.of("error","Registro duplicado"));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error","Error interno en el servidor al intentar eliminar el registro"));
+                    .body(Map.of("error","Error interno en el servidor al intentar guardar el registro"));
         }
     }
     
@@ -59,6 +62,9 @@ public class ProyectoController {
     public ResponseEntity<?> findProyecto(@PathVariable Long id){
         try{
             ProyectoDto proyecto = proyService.findProyecto(id);
+            if (proyecto == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proyecto no encontrado con ID: " + id);
+            }
             return ResponseEntity.ok(proyecto);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -72,6 +78,8 @@ public class ProyectoController {
         try{
             proyService.deleteProyecto(id);
             return ResponseEntity.ok("Proyecto eliminado con exito");
+        }catch(RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno en el servidor al intentar eliminar el registro");
@@ -81,36 +89,29 @@ public class ProyectoController {
     
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateProyecto(@PathVariable Long id,
-                                                @RequestBody Proyecto proyecto){
+                                                @RequestBody ProyectoDto proyectoDto){
     
         try{
-            Proyecto findProyecto = proyService.updateProyecto(id);
-            if(findProyecto != null){
-                if(proyecto.getNombre() != null && !proyecto.getNombre().trim().isEmpty()){
-                    findProyecto.setNombre(proyecto.getNombre());
-                }
-                if(proyecto.getDescripcion() != null && !proyecto.getDescripcion().trim().isEmpty()){
-                    findProyecto.setDescripcion(proyecto.getDescripcion());
-                }
-                if(proyecto.getUrl() != null && !proyecto.getUrl().trim().isEmpty()){
-                    findProyecto.setUrl(proyecto.getUrl());
-                }
-                if(proyecto.getInicio() != null){ // LocalDate can be null, no empty check needed
-                    findProyecto.setInicio(proyecto.getInicio());
-                }
-                if(proyecto.getFin() != null){ // LocalDate can be null, no empty check needed
-                    findProyecto.setFin(proyecto.getFin());
-                }
-                
-                ProyectoDto proyectoSave = proyService.saveProyecto(findProyecto);
-                
-                return ResponseEntity.ok(proyectoSave);
-            }else{
-                return ResponseEntity.badRequest().body("El registro con ese id no existe");
-            }
+            ProyectoDto updatedProyecto = proyService.updateProyecto(id, proyectoDto);
+            return ResponseEntity.ok(updatedProyecto);
+        }catch(RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error en el servidor el intentar modificar el registro");
+                    .body("Error en el servidor al intentar modificar el registro");
+        }
+    }
+
+    @PostMapping("/{id}/logo")
+    public ResponseEntity<?> updateProyectoLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            ProyectoDto updatedProyecto = proyService.updateLogoImage(id, file);
+            return ResponseEntity.ok(updatedProyecto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al subir el logo del proyecto: " + e.getMessage());
         }
     }
 
@@ -131,7 +132,7 @@ public class ProyectoController {
         try {
             List<ProyectoDto> proyectos = proyService.getProyectoByPersonaId(personaId);
             if (proyectos.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron proyectos para la Persona con ID: " + personaId);
+                return ResponseEntity.status(HttpStatus.OK).body(List.of()); // Return empty list with OK status
             }
             return ResponseEntity.ok(proyectos);
         } catch (RuntimeException e) {

@@ -51,6 +51,9 @@ public class EducacionService implements IEducacionService{
     @Autowired
     private IHerramientaRepository herramientaRepository;
 
+    @Autowired
+    private FileUploadUtil fileUploadUtil;
+
     @Value("${uploads.directory}")
     private String uploadDir;
     
@@ -101,7 +104,7 @@ public class EducacionService implements IEducacionService{
         
         if (educacion.getLogo_imagen() != null && !educacion.getLogo_imagen().isEmpty()) {
             try {
-                FileUploadUtil.deleteFile(educacion.getLogo_imagen());
+                fileUploadUtil.deleteFile(uploadDir, educacion.getLogo_imagen());
                 logger.info("Deleted old logo image: {}", educacion.getLogo_imagen());
             } catch (IOException e) {
                 logger.warn("Could not delete old logo image {}: {}", educacion.getLogo_imagen(), e.getMessage());
@@ -168,7 +171,7 @@ public class EducacionService implements IEducacionService{
         // Delete old image if it exists
         if (educacion.getLogo_imagen() != null && !educacion.getLogo_imagen().isEmpty()) {
             try {
-                FileUploadUtil.deleteFile(educacion.getLogo_imagen());
+                fileUploadUtil.deleteFile(uploadDir, educacion.getLogo_imagen());
                 logger.info("Deleted old logo image: {}", educacion.getLogo_imagen());
             } catch (IOException e) {
                 logger.warn("Could not delete old logo image {}: {}", educacion.getLogo_imagen(), e.getMessage());
@@ -177,7 +180,7 @@ public class EducacionService implements IEducacionService{
 
         if (file != null && !file.isEmpty()) {
             try {
-                String newLogoPath = FileUploadUtil.saveFile(uploadDir, file.getOriginalFilename(), file);
+                String newLogoPath = fileUploadUtil.saveFile(uploadDir, file);
                 educacion.setLogo_imagen(newLogoPath);
                 logger.info("Updated logo image for Educacion ID {}: {}", id, newLogoPath);
             } catch (IOException e) {
@@ -193,4 +196,5 @@ public class EducacionService implements IEducacionService{
         return educMap.toDto(updatedEducacion);
     }
 }
+
 

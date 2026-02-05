@@ -243,7 +243,7 @@ Modified the `@GeneratedValue` strategy for `@Id` fields in several model entiti
 **Files Modified:**
 - `src/main/java/com.cv_personal.backend/model/Contacto.java`
 - `src/main/java/com.cv_personal.backend/model/Educacion.java`
-- `src/main/java/com.cv_personal.backend/model/Herramienta.java`
+- `src/main/java/com/cv_personal.backend/model/Herramienta.java`
 - `src/main/java/com/cv_personal.backend/model/Proyecto.java`
 - `src/main/java/com/cv_personal.backend/model/Residencia.java`
 - `src/main/java/com.cv_personal.backend/model/Rol.java`
@@ -255,10 +255,10 @@ Removed unused imports and variables across several Java files to improve code c
 
 **Files Modified:**
 - `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
-- `src/main/java/com/cv_personal.backend/controller/PersonaController.java`
-- `src/main/java/com/cv_personal.backend/model/Persona.java`
+- `src/main/java/com.cv_personal.backend/controller/PersonaController.java`
+- `src/main/java/com.cv_personal.backend/model/Persona.java`
 - `src/main/java/com.cv_personal.backend/model/Usuario.java`
-- `src/main/java/com/cv_personal.backend/service/PersonaService.java`
+- `src/main/java/com.cv_personal.backend/service/PersonaService.java`
 
 ### Implement ManyToMany relationship for Educacion/Proyecto and Herramienta
 
@@ -275,10 +275,10 @@ This includes:
 - `src/main/java/com/cv_personal.backend/service/EducacionService.java`
 - `src/main/java/com.cv_personal.backend/service/IEducacionService.java`
 - `src/main/java/com.cv_personal.backend/service/IProyectoService.java`
-- `src/main/java/com/cv_personal.backend/service/ProyectoService.java`
-- `src/main/java/com.cv_personal.backend/dto/EducacionHerramientasDto.java` (new file)
-- `src/main/java/com.cv_personal.backend/dto/HerramientaRequestDto.java` (new file)
-- `src/main/java/com/cv_personal.backend/dto/ProyectoHerramientasDto.java` (new file)
+- `src/main/java/com.cv_personal.backend/service/ProyectoService.java`
+- `src/main/java/com/cv_personal.backend/dto/EducacionHerramientasDto.java` (new file)
+- `src/main/java/com/cv_personal.backend/dto/HerramientaRequestDto.java` (new file)
+- `src/main/java/com.cv_personal.backend/dto/ProyectoHerramientasDto.java` (new file)
 
 ### Feature: Retrieve related entities by Persona ID
 
@@ -297,12 +297,12 @@ Implemented functionality to retrieve lists of associated entities (Educacion, R
 - `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
 - `src/main/java/com.cv_personal.backend/service/IResidenciaService.java`
 - `src/main/java/com.cv_personal.backend/service/ResidenciaService.java`
-- `src/main/java/com/cv_personal.backend/controller/ResidenciaController.java`
+- `src/main/java/com.cv_personal.backend/controller/ResidenciaController.java`
 - `src/main/java/com.cv_personal.backend/service/IProyectoService.java`
 - `src/main/java/com.cv_personal.backend/service/ProyectoService.java`
-- `src/main/java/com.cv_personal.backend/controller/ProyectoController.java`
+- `src/main/java/com/cv_personal.backend/controller/ProyectoController.java`
 - `src/main/java/com/cv_personal.backend/service/IContactoService.java`
-- `src/main/java/com.cv_personal.backend/service/ContactoService.java`
+- `src/main/java/com/cv_personal.backend/service/ContactoService.java`
 - `src/main/java/com.cv_personal.backend/controller/ContactoController.java`
 ### Feature: Enhance Herramienta model with new attributes and default logo logic, and dependency fixes
 
@@ -311,17 +311,51 @@ Implemented significant enhancements to the `Herramienta` management:
 - Added `descripcion` (String, nullable), `url` (String, nullable), and `logo` (String for path) fields to the `Herramienta` model, `HerramientaDto`, and `HerramientaMapper`.
 - Introduced file upload functionality for Herramienta logos, including a new `updateLogoImage` method in `IHerramientaService` and `HerramientaService`, and a `POST /{id}/logo` endpoint in `HerramientaController`.
 - Ensured a default logo path (`/uploads/default-tool-icon.png`) is automatically assigned if no custom logo is provided during creation or update. This also involved configuring the `uploads.directory` in `application.properties` and verifying `MvcConfig` for static resource serving.
-- Resolved `UnsatisfiedDependencyException` errors by fixing a duplicate class definition in `HerramientaService`.
+- Resolved `UnsatisfiedDependencyException` errors by fixing a duplicated class definition in `HerramientaService`.
 - Corrected method signature mismatches and dependency injection issues in `EducacionService` and `ProyectoService` where they interacted with `HerramientaService`, ensuring proper fetching of `Herramienta` entities.
 - Modified `HerramientaService.java` to store the logo path as `/uploads/unique-filename.ext` to ensure the full relative path is saved.
 
 **Files Modified:**
-- `src/main/java/com/cv_personal/backend/model/Herramienta.java`
-- `src/main/java/com/cv_personal/backend/dto/HerramientaDto.java`
-- `src/main/java/com/cv_personal/backend/mapper/HerramientaMapper.java`
-- `src/main/java/com/cv_personal/backend/service/IHerramientaService.java`
-- `src/main/java/com/cv_personal/backend/service/HerramientaService.java`
-- `src/main/java/com/cv_personal/backend/controller/HerramientaController.java`
-- `src/main/java/com/cv_personal/backend/service/EducacionService.java`
-- `src/main/java/com/cv_personal/backend/service/ProyectoService.java`
+- `src/main/java/com/cv_personal.backend/model/Herramienta.java`
+- `src/main/java/com/cv_personal.backend/dto/HerramientaDto.java`
+- `src/main/java/com/cv_personal.backend/mapper/HerramientaMapper.java`
+- `src/main/java/com/cv_personal.backend/service/IHerramientaService.java`
+- `src/main/java/com/cv_personal.backend/service/HerramientaService.java`
+- `src/main/java/com/cv_personal.backend/controller/HerramientaController.java`
+- `src/main/java/com/cv_personal.backend/service/EducacionService.java`
+- `src/main/java/com/cv_personal.backend/service/ProyectoService.java`
 - `src/main/resources/application.properties`
+
+### Agent-Assisted Fixes and Refinements (February 2026)
+
+**Description:**
+Addressed several compilation and runtime issues, culminating in a successful build and application startup.
+
+**Key Changes:**
+
+1.  **`application.properties` Fixes:**
+    *   Resolved `ClassNotFoundException` related to Hibernate dialect by correcting `spring.jpa.properties.hibernate.dialect` to `org.hibernate.dialect.MySQLDialect`.
+    *   Removed hidden null characters (`\u0000`) that were corrupting the file parsing and leading to `ClassNotFoundException` and compilation errors.
+    *   (Tried to configure `server.port=8081` but was later reverted by user or not persisted).
+
+2.  **`IProyectoService.java` Null Character Cleanup:**
+    *   Removed `illegal character: '\u0000'` that prevented compilation.
+
+3.  **`ProyectoController.java` Type Mismatch Resolution:**
+    *   Corrected the `updateProyecto` method's assignment from `Proyecto` to `ProyectoDto` to match the return type of `IProyectoService.updateProyecto`, resolving an `incompatible types` compilation error.
+
+4.  **`FileUploadUtil` Integration and Method Call Corrections (across `EducacionService.java`, `HerramientaService.java`, `ContactoService.java`):**
+    *   **Problem:** Calls to `FileUploadUtil.deleteFile()` and `FileUploadUtil.saveFile()` were incorrectly made in a static context, despite `FileUploadUtil` being a non-static `@Component` bean.
+    *   **Solution:** Injected `FileUploadUtil` as a dependency into each service class using `@Autowired`.
+    *   **Method Signature Alignment:**
+        *   Adjusted `deleteFile` calls to correctly pass two `String` arguments (`uploadDir`, `fileName`).
+        *   Adjusted `saveFile` calls to correctly pass two arguments (`uploadDir`, `MultipartFile`), removing superfluous `file.getOriginalFilename()` arguments.
+    *   **Structural Correction in `EducacionService.java`:** Restored a malformed `if` condition around a `deleteFile` call in `updateLogoImage` to ensure proper logic flow.
+
+**Files Modified:**
+- `src/main/resources/application.properties`
+- `src/main/java/com/cv_personal.backend/service/IProyectoService.java`
+- `src/main/java/com/cv_personal.backend/controller/ProyectoController.java`
+- `src/main/java/com/cv_personal.backend/service/EducacionService.java`
+- `src/main/java/com/cv_personal.backend/service/HerramientaService.java`
+- `src/main/java/com/cv_personal.backend/service/ContactoService.java`

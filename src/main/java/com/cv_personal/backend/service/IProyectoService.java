@@ -9,6 +9,8 @@ import com.cv_personal.backend.model.Proyecto;
 import com.cv_personal.backend.dto.ProyectoHerramientasDto; // Import DTO
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 
 public interface IProyectoService {
     
@@ -18,11 +20,16 @@ public interface IProyectoService {
     
     public ProyectoDto findProyecto(Long id);
     
-    public Proyecto updateProyecto(Long id);
+    public ProyectoDto updateProyecto(Long id, ProyectoDto proyectoDto);
     
     public void deleteProyecto(Long id);
     
     public ProyectoDto addHerramientasToProyecto(ProyectoHerramientasDto dto);
     
     public List<ProyectoDto> getProyectoByPersonaId(Long personaId);
+    
+    public ProyectoDto updateLogoImage(Long id, MultipartFile file);
+
 }
+
+

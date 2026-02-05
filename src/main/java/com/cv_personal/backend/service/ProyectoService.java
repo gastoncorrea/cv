@@ -9,20 +9,30 @@ import com.cv_personal.backend.dto.ProyectoHerramientasDto;
 import com.cv_personal.backend.dto.HerramientaRequestDto;
 import com.cv_personal.backend.mapper.ProyectoMapper;
 import com.cv_personal.backend.model.Herramienta;
-import com.cv_personal.backend.model.Persona; // Import Persona
+import com.cv_personal.backend.model.Persona;
 import com.cv_personal.backend.model.Proyecto;
-import com.cv_personal.backend.repository.IPersonaRepository; // Import IPersonaRepository
+import com.cv_personal.backend.repository.IPersonaRepository;
 import com.cv_personal.backend.repository.IProyectoRepository;
-import com.cv_personal.backend.repository.IHerramientaRepository; // Import IHerramientaRepository
+import com.cv_personal.backend.repository.IHerramientaRepository;
+import com.cv_personal.backend.util.FileUploadUtil;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.env.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class ProyectoService implements IProyectoService{
     
+    private static final Logger logger = LoggerFactory.getLogger(ProyectoService.class);
+
     @Autowired
     private IProyectoRepository proRepo;
     
@@ -30,10 +40,16 @@ public class ProyectoService implements IProyectoService{
     private ProyectoMapper proyMap;
 
     @Autowired
-    private IHerramientaService herramientaService; // Inject IHerramientaService
+    private IHerramientaService herramientaService;
     
     @Autowired
-    private IHerramientaRepository herramientaRepository; // Inject IHerramientaRepository
+    private IHerramientaRepository herramientaRepository;
+
+    @Autowired
+    private FileUploadUtil fileUploadUtil;
+
+    @Autowired
+    private Environment env;
 
     @Override
     public ProyectoDto saveProyecto(Proyecto proyecto) {
@@ -66,9 +82,30 @@ public class ProyectoService implements IProyectoService{
     }
 
     @Override
-    public Proyecto updateProyecto(Long id) {
-        Proyecto proyecto = proRepo.findById(id).orElse(null);
-        return proyecto;
+    public ProyectoDto updateProyecto(Long id, ProyectoDto proyectoDto) {
+        Proyecto proyecto = proRepo.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Proyecto not found with ID: " + id));
+
+        if (proyectoDto.getNombre() != null && !proyectoDto.getNombre().isEmpty()) {
+            proyecto.setNombre(proyectoDto.getNombre());
+        }
+        if (proyectoDto.getDescripcion() != null && !proyectoDto.getDescripcion().isEmpty()) {
+            proyecto.setDescripcion(proyectoDto.getDescripcion());
+        }
+        if (proyectoDto.getUrl() != null && !proyectoDto.getUrl().isEmpty()) {
+            proyecto.setUrl(proyectoDto.getUrl());
+        }
+        if (proyectoDto.getInicio() != null) {
+            proyecto.setInicio(proyectoDto.getInicio());
+        }
+        if (proyectoDto.getFin() != null) {
+            proyecto.setFin(proyectoDto.getFin());
+        }
+        if (proyectoDto.getLogo_proyecto() != null && !proyectoDto.getLogo_proyecto().isEmpty()) {
+            proyecto.setLogo_proyecto(proyectoDto.getLogo_proyecto());
+        }
+
+        return proyMap.toDto(proRepo.save(proyecto));
     }
 
     @Override
@@ -88,6 +125,7 @@ public class ProyectoService implements IProyectoService{
                 herramienta = new Herramienta();
                 herramienta.setNombre(herramientaDto.getNombre());
                 herramienta.setVersion(herramientaDto.getVersion());
+                // Optional: set other fields like description, url, logo if they are part of HerramientaRequestDto
                 herramientaService.saveHerramienta(herramienta); // Save and update its ID
             }
 
@@ -96,13 +134,12 @@ public class ProyectoService implements IProyectoService{
             herramienta.getProyectos().add(proyecto); // Maintain bidirectional consistency
         }
         
-        // Save the updated Proyecto which will cascade the relationship changes if properly configured
         Proyecto updatedProyecto = proRepo.save(proyecto);
         return proyMap.toDto(updatedProyecto);
     }
 
     @Autowired
-    private IPersonaRepository personaRepository; // Inject IPersonaRepository
+    private IPersonaRepository personaRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -111,9 +148,32 @@ public class ProyectoService implements IProyectoService{
                                 .orElseThrow(() -> new RuntimeException("Persona not found with ID: " + personaId));
         
         List<ProyectoDto> listProyectoDto = new ArrayList<>();
-        for (Proyecto proyecto : persona.getProyectos()) { // Access proyectos directly
+        for (Proyecto proyecto : persona.getProyectos()) {
             listProyectoDto.add(proyMap.toDto(proyecto));
         }
         return listProyectoDto;
+    }
+
+    @Override
+    @Transactional
+    public ProyectoDto updateLogoImage(Long id, MultipartFile file) {
+        Proyecto proyecto = proRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proyecto not found with ID: " + id));
+
+        String uploadDir = env.getProperty("uploads.directory");
+        if (uploadDir == null) {
+            throw new IllegalStateException("Upload directory is not configured. Please set 'uploads.directory' in application.properties.");
+        }
+
+        try {
+            String fileName = fileUploadUtil.saveFile(uploadDir, file);
+            String fileUrl = "/uploads/" + fileName; // Construct the URL
+            proyecto.setLogo_proyecto(fileUrl);
+            Proyecto updatedProyecto = proRepo.save(proyecto);
+            return proyMap.toDto(updatedProyecto);
+        } catch (IOException e) {
+            logger.error("Could not save project logo image for ID {}: {}", id, e.getMessage());
+            throw new RuntimeException("Could not save project logo image: " + e.getMessage());
+        }
     }
 }

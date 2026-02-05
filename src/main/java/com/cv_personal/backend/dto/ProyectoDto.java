@@ -19,6 +19,7 @@ public class ProyectoDto {
     private String url;
     private LocalDate inicio;
     private LocalDate fin;
+    private String logo_proyecto;
     
     private Set<HerramientaDto> herramientas;
     
