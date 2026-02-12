@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable; // Added missing import
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -49,7 +50,12 @@ public class Educacion {
     @JoinColumn(name = "id_persona", nullable = false)
     private Persona persona;
     
-    @ManyToMany(mappedBy = "estudios")
+    @ManyToMany
+    @JoinTable(
+        name = "herramienta_educacion",
+        joinColumns = @JoinColumn(name = "educacion_id"),
+        inverseJoinColumns = @JoinColumn(name = "herramienta_id")
+    )
     private Set<Herramienta> herramientas = new HashSet<>();
     
 }

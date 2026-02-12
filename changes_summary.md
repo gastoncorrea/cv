@@ -131,7 +131,7 @@ Implemented null and empty string checks for `nombre` and `version` fields from 
 Implemented null and empty string checks for `nombre_institucion`, `logo_imagen`, `fecha_inicio`, `fecha_fin`, `titulo`, and `url_titulo` fields from the incoming `Educacion` object within the `updateEducacion` controller method. This prevents `null` values from overwriting existing data when not provided in a PUT request.
 
 **Files Modified:**
-- `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
+- `src/main/java/com/cv_personal.backend/controller/EducacionController.java`
 
 ### Fixed partial update issue in `ContactoController.java`'s `updateContacto` method and added logo upload endpoint
 
@@ -199,8 +199,8 @@ Multiple changes were implemented to address the issue where deleting a `Persona
     *   Reordered the `catch` blocks in `deletePersona` to place the more specific `DataAccessException` handler before the general `RuntimeException` handler. This resolved a compilation error and ensures correct exception handling.
 
 **Files Modified:**
-- `src/main/java/com.cv_personal.backend/service/PersonaService.java`
-- `src/main/java/com.cv_personal.backend/controller/PersonaController.java`
+- `src/main/java/com/cv_personal.backend/service/PersonaService.java`
+- `src/main/java/com/cv_personal.backend/controller/PersonaController.java`
 
 ### Enabled Cascade Deletion for Persona Relationships
 
@@ -225,7 +225,7 @@ The `deletePersona` method in `PersonaService.java` was refactored to allow the 
 The updated logic now explicitly breaks the bidirectional `@OneToOne` association between `Persona` and `Usuario` by setting the `persona` field in `Usuario` to `null` and the `usuario` field in `Persona` to `null` within a transactional context, *before* the `Persona` entity is deleted. This ensures that the `Usuario` record remains in the database and is de-linked from the deleted `Persona`, fulfilling the new requirement. The `IUsuarioRepository` was also injected into `PersonaService` to support this change.
 
 **Files Modified:**
-- `src/main/java/com.cv_personal.backend/service/PersonaService.java`
+- `src/main/java/com/cv_personal.backend/service/PersonaService.java`
 
 ### Success message in ConctactoController fixed
 
@@ -241,12 +241,12 @@ Corrected the success message returned by the `deleteContacto` method in `Contac
 Modified the `@GeneratedValue` strategy for `@Id` fields in several model entities (Contacto, Educacion, Herramienta, Proyecto, Residencia, Rol) from `GenerationType.SEQUENCE` to `GenerationType.IDENTITY` for consistency and to leverage database auto-increment capabilities.
 
 **Files Modified:**
-- `src/main/java/com.cv_personal.backend/model/Contacto.java`
-- `src/main/java/com.cv_personal.backend/model/Educacion.java`
+- `src/main/java/com/cv_personal.backend/model/Contacto.java`
+- `src/main/java/com/cv_personal.backend/model/Educacion.java`
 - `src/main/java/com/cv_personal.backend/model/Herramienta.java`
 - `src/main/java/com/cv_personal.backend/model/Proyecto.java`
 - `src/main/java/com/cv_personal.backend/model/Residencia.java`
-- `src/main/java/com.cv_personal.backend/model/Rol.java`
+- `src/main/java/com/cv_personal.backend/model/Rol.java`
 
 ### Removed unused imports and variables
 
@@ -254,11 +254,11 @@ Modified the `@GeneratedValue` strategy for `@Id` fields in several model entiti
 Removed unused imports and variables across several Java files to improve code clarity and maintainability. This cleanup was based on the analysis provided by the codebase_investigator agent.
 
 **Files Modified:**
-- `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
-- `src/main/java/com.cv_personal.backend/controller/PersonaController.java`
-- `src/main/java/com.cv_personal.backend/model/Persona.java`
-- `src/main/java/com.cv_personal.backend/model/Usuario.java`
-- `src/main/java/com.cv_personal.backend/service/PersonaService.java`
+- `src/main/java/com/cv_personal.backend/controller/EducacionController.java`
+- `src/main/java/com/cv_personal.backend/controller/PersonaController.java`
+- `src/main/java/com/cv_personal.backend/model/Persona.java`
+- `src/main/java/com/cv_personal.backend/model/Usuario.java`
+- `src/main/java/com/cv_personal.backend/service/PersonaService.java`
 
 ### Implement ManyToMany relationship for Educacion/Proyecto and Herramienta
 
@@ -270,15 +270,15 @@ This includes:
 - Exposed these functionalities via new POST endpoints `/educacion/herramientas` and `/proyecto/herramientas` in their respective controllers.
 
 **Files Modified:**
-- `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
+- `src/main/java/com/cv_personal.backend/controller/EducacionController.java`
 - `src/main/java/com/cv_personal.backend/controller/ProyectoController.java`
 - `src/main/java/com/cv_personal.backend/service/EducacionService.java`
-- `src/main/java/com.cv_personal.backend/service/IEducacionService.java`
-- `src/main/java/com.cv_personal.backend/service/IProyectoService.java`
-- `src/main/java/com.cv_personal.backend/service/ProyectoService.java`
+- `src/main/java/com/cv_personal.backend/service/IEducacionService.java`
+- `src/main/java/com/cv_personal.backend/service/IProyectoService.java`
+- `src/main/java/com/cv_personal.backend/service/ProyectoService.java`
 - `src/main/java/com/cv_personal.backend/dto/EducacionHerramientasDto.java` (new file)
 - `src/main/java/com/cv_personal.backend/dto/HerramientaRequestDto.java` (new file)
-- `src/main/java/com.cv_personal.backend/dto/ProyectoHerramientasDto.java` (new file)
+- `src/main/java/com/cv_personal.backend/dto/ProyectoHerramientasDto.java` (new file)
 
 ### Feature: Retrieve related entities by Persona ID
 
@@ -291,19 +291,19 @@ Implemented functionality to retrieve lists of associated entities (Educacion, R
 - Fixed a duplicated class definition in `ResidenciaService.java`.
 
 **Files Modified:**
-- `src/main/java/com.cv_personal.backend/service/IEducacionService.java`
-- `src/main/java/com.cv_personal.backend/service/EducacionService.java`
-- `src/main/java/com.cv_personal.backend/repository/IEducacionRepository.java`
-- `src/main/java/com.cv_personal.backend/controller/EducacionController.java`
-- `src/main/java/com.cv_personal.backend/service/IResidenciaService.java`
-- `src/main/java/com.cv_personal.backend/service/ResidenciaService.java`
-- `src/main/java/com.cv_personal.backend/controller/ResidenciaController.java`
-- `src/main/java/com.cv_personal.backend/service/IProyectoService.java`
-- `src/main/java/com.cv_personal.backend/service/ProyectoService.java`
+- `src/main/java/com/cv_personal.backend/service/IEducacionService.java`
+- `src/main/java/com/cv_personal.backend/service/EducacionService.java`
+- `src/main/java/com/cv_personal.backend/repository/IEducacionRepository.java`
+- `src/main/java/com/cv_personal.backend/controller/EducacionController.java`
+- `src/main/java/com/cv_personal.backend/service/IResidenciaService.java`
+- `src/main/java/com/cv_personal.backend/service/ResidenciaService.java`
+- `src/main/java/com/cv_personal.backend/controller/ResidenciaController.java`
+- `src/main/java/com/cv_personal.backend/service/IProyectoService.java`
+- `src/main/java/com/cv_personal.backend/service/ProyectoService.java`
 - `src/main/java/com/cv_personal.backend/controller/ProyectoController.java`
 - `src/main/java/com/cv_personal.backend/service/IContactoService.java`
 - `src/main/java/com/cv_personal.backend/service/ContactoService.java`
-- `src/main/java/com.cv_personal.backend/controller/ContactoController.java`
+- `src/main/java/com/cv_personal.backend/controller/ContactoController.java`
 ### Feature: Enhance Herramienta model with new attributes and default logo logic, and dependency fixes
 
 **Description:**
@@ -359,3 +359,30 @@ Addressed several compilation and runtime issues, culminating in a successful bu
 - `src/main/java/com/cv_personal.backend/service/EducacionService.java`
 - `src/main/java/com/cv_personal.backend/service/HerramientaService.java`
 - `src/main/java/com/cv_personal.backend/service/ContactoService.java`
+
+### Fixed Foreign Key Constraint on Educacion Deletion
+
+**Description:**
+Modified the `deleteEducacion` method in `EducacionService.java` to explicitly manage the Many-to-Many association with `Herramienta` entities before deleting an `Educacion`. This involves iterating through associated `Herramienta`s, removing the `Educacion` from their `estudios` set, saving the updated `Herramienta`s, and clearing the collection on the `Educacion` side. The method is now transactional to ensure atomicity. This resolves the `foreign key constraint fails` error when deleting an `Educacion` that has associated `Herramienta` entries.
+
+**Files Modified:**
+- `src/main/java/com/cv_personal.backend/service/EducacionService.java`
+
+### Inversión de las Relaciones Many-to-Many entre Educacion/Proyecto y Herramienta
+
+**Description:**
+Se invirtió la propiedad de las relaciones Many-to-Many entre `Educacion`/`Proyecto` y `Herramienta`. Ahora, `Educacion` y `Proyecto` son los lados propietarios de sus respectivas relaciones, mientras que `Herramienta` se ha convertido en el lado inverso (`mappedBy`). Este cambio se realizó para alinear mejor la lógica de negocio con la capacidad de "agregar Herramientas a Educacion y Proyecto" de manera más intuitiva. La gestión de las tablas de unión (`herramienta_educacion`, `herramienta_proyecto`) ahora se realiza a través de las entidades `Educacion` y `Proyecto`.
+
+**Files Modified:**
+- `src/main/java/com/cv_personal.backend/model/Educacion.java`
+- `src/main/java/com/cv_personal.backend/model/Proyecto.java`
+- `src/main/java/com/cv_personal.backend/model/Herramienta.java`
+
+### Corrección de Error de Compilación `cannot find symbol: class JoinTable`
+
+**Description:**
+Se resolvieron errores de compilación (`cannot find symbol: class JoinTable`) en `Educacion.java` y `Proyecto.java` que surgieron después de invertir las relaciones Many-to-Many. El error se debía a la falta de la importación `jakarta.persistence.JoinTable`. La adición de esta importación en ambos archivos ha permitido que el proyecto compile y se inicie correctamente.
+
+**Files Modified:**
+- `src/main/java/com/cv_personal.backend/model/Educacion.java`
+- `src/main/java/com/cv_personal.backend/model/Proyecto.java`

@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,7 +78,17 @@ public class ProyectoService implements IProyectoService{
     }
 
     @Override
+    @Transactional
     public void deleteProyecto(Long id) {
+        Proyecto proyecto = proRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proyecto not found with ID: " + id));
+
+        // Disassociate project from all associated tools (Herramienta)
+        for (Herramienta herramienta : new HashSet<>(proyecto.getHerramientas())) {
+            herramienta.getProyectos().remove(proyecto);
+            herramientaRepository.save(herramienta);
+        }
+        
         proRepo.deleteById(id);
     }
 

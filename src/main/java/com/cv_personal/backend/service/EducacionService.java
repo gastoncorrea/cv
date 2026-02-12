@@ -98,10 +98,18 @@ public class EducacionService implements IEducacionService{
     }
 
     @Override
+    @Transactional
     public void deleteEducacion(Long id) {
         Educacion educacion = educRepository.findById(id)
                                     .orElseThrow(() -> new RuntimeException("Educacion not found with ID: " + id));
         
+        // Remove associations with Herramienta entities
+        for (Herramienta herramienta : new ArrayList<>(educacion.getHerramientas())) {
+            herramienta.getEstudios().remove(educacion);
+            herramientaRepository.save(herramienta); // Save Herramienta to update the join table
+        }
+        educacion.getHerramientas().clear(); // Clear the collection on the Educacion side as well
+
         if (educacion.getLogo_imagen() != null && !educacion.getLogo_imagen().isEmpty()) {
             try {
                 fileUploadUtil.deleteFile(uploadDir, educacion.getLogo_imagen());

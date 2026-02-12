@@ -37,19 +37,9 @@ public class Herramienta {
     @Column(name = "logo")
     private String logo;
     
-    @ManyToMany
-    @JoinTable(
-        name = "herramienta_proyecto",
-        joinColumns = @JoinColumn(name = "herramienta_id"),
-        inverseJoinColumns = @JoinColumn(name = "proyecto_id")
-    )
+    @ManyToMany(mappedBy = "herramientas")
     private Set<Proyecto> proyectos = new HashSet<>();
     
-    @ManyToMany
-    @JoinTable(
-        name = "herramienta_educacion",
-        joinColumns = @JoinColumn(name = "herramienta_id"),
-        inverseJoinColumns = @JoinColumn(name = "educacion_id")
-    )
+    @ManyToMany(mappedBy = "herramientas")
     private Set<Educacion> estudios = new HashSet<>();
 }
