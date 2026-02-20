@@ -144,8 +144,9 @@ public class HerramientaService implements IHerramientaService {
         if (file != null && !file.isEmpty()) {
             try {
                 String newLogoPath = fileUploadUtil.saveFile(uploadsDir, file);
-                herramienta.setLogo(newLogoPath);
-                logger.info("Updated logo image for Herramienta ID {}: {}", id, newLogoPath);
+                String fileUrl = "/uploads/" + newLogoPath; // Construct the URL
+                herramienta.setLogo(fileUrl);
+                logger.info("Updated logo image for Herramienta ID {}: {}", id, fileUrl);
             } catch (IOException e) {
                 logger.error("Could not save logo image for Herramienta ID {}: {}", id, e.getMessage());
                 throw new RuntimeException("Could not save logo image", e);

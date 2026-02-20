@@ -189,8 +189,9 @@ public class EducacionService implements IEducacionService{
         if (file != null && !file.isEmpty()) {
             try {
                 String newLogoPath = fileUploadUtil.saveFile(uploadDir, file);
-                educacion.setLogo_imagen(newLogoPath);
-                logger.info("Updated logo image for Educacion ID {}: {}", id, newLogoPath);
+                String fileUrl = "/uploads/" + newLogoPath; // Construct the URL
+                educacion.setLogo_imagen(fileUrl);
+                logger.info("Updated logo image for Educacion ID {}: {}", id, fileUrl);
             } catch (IOException e) {
                 logger.error("Could not save logo image for Educacion ID {}: {}", id, e.getMessage());
                 throw new RuntimeException("Could not save logo image", e);
@@ -201,6 +202,27 @@ public class EducacionService implements IEducacionService{
         }
 
         Educacion updatedEducacion = educRepository.save(educacion);
+        return educMap.toDto(updatedEducacion);
+    }
+
+    @Override
+    @Transactional
+    public EducacionDto removeHerramientaFromEducacion(Long educacionId, Long herramientaId) {
+        Educacion educacion = educRepository.findById(educacionId)
+                                    .orElseThrow(() -> new RuntimeException("Educacion not found with ID: " + educacionId));
+        Herramienta herramienta = herramientaRepository.findById(herramientaId)
+                                    .orElseThrow(() -> new RuntimeException("Herramienta not found with ID: " + herramientaId));
+
+        if (!educacion.getHerramientas().contains(herramienta)) {
+            throw new RuntimeException("Herramienta with ID: " + herramientaId + " is not associated with Educacion with ID: " + educacionId);
+        }
+
+        educacion.getHerramientas().remove(herramienta);
+        herramienta.getEstudios().remove(educacion); // Maintain bidirectional consistency
+
+        Educacion updatedEducacion = educRepository.save(educacion);
+        herramientaRepository.save(herramienta); // Save herramienta to update join table
+
         return educMap.toDto(updatedEducacion);
     }
 }

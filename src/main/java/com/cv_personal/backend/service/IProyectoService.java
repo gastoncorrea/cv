@@ -30,6 +30,7 @@ public interface IProyectoService {
     
     public ProyectoDto updateLogoImage(Long id, MultipartFile file);
 
+    public ProyectoDto removeHerramientaFromProyecto(Long proyectoId, Long herramientaId);
 }
 
 

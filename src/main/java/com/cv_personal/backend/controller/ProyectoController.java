@@ -141,4 +141,16 @@ public class ProyectoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener proyectos por ID de Persona: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/{proyectoId}/herramientas/{herramientaId}")
+    public ResponseEntity<?> removeHerramientaFromProyecto(@PathVariable Long proyectoId, @PathVariable Long herramientaId) {
+        try {
+            ProyectoDto updatedProyecto = proyService.removeHerramientaFromProyecto(proyectoId, herramientaId);
+            return ResponseEntity.ok(updatedProyecto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error al eliminar la herramienta del proyecto: " + e.getMessage()));
+        }
+    }
 }

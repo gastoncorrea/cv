@@ -187,4 +187,25 @@ public class ProyectoService implements IProyectoService{
             throw new RuntimeException("Could not save project logo image: " + e.getMessage());
         }
     }
+
+    @Override
+    @Transactional
+    public ProyectoDto removeHerramientaFromProyecto(Long proyectoId, Long herramientaId) {
+        Proyecto proyecto = proRepo.findById(proyectoId)
+                                .orElseThrow(() -> new RuntimeException("Proyecto not found with ID: " + proyectoId));
+        Herramienta herramienta = herramientaRepository.findById(herramientaId)
+                                    .orElseThrow(() -> new RuntimeException("Herramienta not found with ID: " + herramientaId));
+
+        if (!proyecto.getHerramientas().contains(herramienta)) {
+            throw new RuntimeException("Herramienta with ID: " + herramientaId + " is not associated with Proyecto with ID: " + proyectoId);
+        }
+
+        proyecto.getHerramientas().remove(herramienta);
+        herramienta.getProyectos().remove(proyecto); // Maintain bidirectional consistency
+
+        Proyecto updatedProyecto = proRepo.save(proyecto);
+        herramientaRepository.save(herramienta); // Save herramienta to update join table
+
+        return proyMap.toDto(updatedProyecto);
+    }
 }

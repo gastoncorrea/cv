@@ -27,5 +27,7 @@ public interface IEducacionService {
     public EducacionDto updateLogoImage(Long id, org.springframework.web.multipart.MultipartFile file);
     
     public List<EducacionDto> getEducacionByPersonaId(Long personaId);
+    
+    public EducacionDto removeHerramientaFromEducacion(Long educacionId, Long herramientaId);
 }
 

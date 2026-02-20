@@ -153,11 +153,23 @@ public class EducacionController {
         try {
             List<EducacionDto> educaciones = educService.getEducacionByPersonaId(personaId);
             if (educaciones.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron educaciones para la Persona con ID: " + personaId);
+                return ResponseEntity.status(HttpStatus.OK).body(List.of()); // Return empty list with OK status
             }
             return ResponseEntity.ok(educaciones);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener educaciones por ID de Persona: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{educacionId}/herramientas/{herramientaId}")
+    public ResponseEntity<?> removeHerramientaFromEducacion(@PathVariable Long educacionId, @PathVariable Long herramientaId) {
+        try {
+            EducacionDto updatedEducacion = educService.removeHerramientaFromEducacion(educacionId, herramientaId);
+            return ResponseEntity.ok(updatedEducacion);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error al eliminar la herramienta de la educación: " + e.getMessage()));
         }
     }
 }
